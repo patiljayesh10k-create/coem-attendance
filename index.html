@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COEM Jalgaon - Smart Dynamic QR Attendance Portal</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- QRCode.js Generator -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- HTML5 QR Camera Scanner -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <style>
+    .role-card {
+      transition: all 0.25s ease-in-out;
+      cursor: pointer;
+    }
+    .role-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.5);
+    }
+    .status-P { background-color: #16a34a; color: white; } /* Present - Green */
+    .status-A { background-color: #dc2626; color: white; } /* Absent - Red */
+    .status-L { background-color: #eab308; color: black; } /* Late - Yellow */
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col justify-between">
+
+  <!-- ================= TOP NAVBAR WITH COEM LOGO ================= -->
+  <nav class="bg-slate-900 border-b border-slate-800 px-4 md:px-8 py-3 sticky top-0 z-40 shadow-xl">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <!-- COEM Logo & Name -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="showView('home-view')">
+        <div class="bg-white p-1.5 rounded-xl flex items-center justify-center shadow-md">
+          <img src="https://coem.ac.in/wp-content/uploads/2021/04/coem-logo.png" 
+               alt="COEM Logo" 
+               onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=COEM+Jalgaon&background=1e3a8a&color=fff&size=128';"
+               class="h-10 w-auto object-contain max-w-[120px]">
+        </div>
+        <div>
+          <h1 class="text-sm md:text-base font-extrabold text-white tracking-wide leading-tight">
+            COLLEGE OF ENGINEERING & MANAGEMENT
+          </h1>
+          <p class="text-[11px] text-indigo-400 font-semibold tracking-wider">
+            COEM JALGAON • SMART ATTENDANCE PORTAL
+          </p>
+        </div>
+      </div>
+
+      <!-- Logged User Status -->
+      <div id="nav-user-info" style="display: none;" class="flex items-center space-x-3">
+        <span id="user-badge" class="px-3 py-1 bg-indigo-950 border border-indigo-500/50 text-indigo-300 rounded-full text-xs font-bold"></span>
+        <button onclick="logout()" class="px-3 py-1.5 bg-red-600/90 hover:bg-red-600 text-white rounded-xl text-xs font-bold transition shadow">
+          <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ================= MAIN CONTENT CONTAINER ================= -->
+  <main class="max-w-6xl w-full mx-auto p-4 md:p-6 flex-grow">
+
+    <!-- ================= 1. HOME / ROLE SELECTION VIEW ================= -->
+    <div id="home-view" class="space-y-8 py-4">
+      <div class="text-center max-w-2xl mx-auto space-y-2">
+        <div class="inline-block px-3 py-1 bg-indigo-900/40 border border-indigo-700/50 text-indigo-300 rounded-full text-xs font-semibold mb-2">
+          Academic Year 2026–2027
+        </div>
+        <h2 class="text-3xl md:text-4xl font-extrabold text-white">Select Your Login Portal</h2>
+        <p class="text-slate-400 text-xs md:text-sm">
+          Dynamic rotating QR codes, single-device lock, live camera scanner, and parent verification code.
+        </p>
+      </div>
+
+      <!-- 4 Portal Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        
+        <!-- Student Card -->
+        <div onclick="openLogin('student')" class="role-card bg-slate-900 border border-slate-800 hover:border-indigo-500 p-6 rounded-2xl shadow-xl flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-2xl mb-4">
+              <i class="fa-solid fa-user-graduate"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-1">Student Portal</h3>
+            <p class="text-xs text-slate-400 mb-4">Scan live rotating QR, track subject attendance % and personal calendar.</p>
+          </div>
+          <div class="text-indigo-400 text-xs font-bold flex items-center">
+            Login / Register <i class="fa-solid fa-arrow-right ml-1.5"></i>
+          </div>
+        </div>
+
+        <!-- Teacher Card -->
+        <div onclick="openLogin('teacher')" class="role-card bg-slate-900 border border-slate-800 hover:border-emerald-500 p-6 rounded-2xl shadow-xl flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-emerald-600/20 text-emerald-400 flex items-center justify-center text-2xl mb-4">
+              <i class="fa-solid fa-chalkboard-user"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-1">Teacher Portal</h3>
+            <p class="text-xs text-slate-400 mb-4">Generate 2-min Dynamic QR, manual P/A/L (Late) toggling, and export reports.</p>
+          </div>
+          <div class="text-emerald-400 text-xs font-bold flex items-center">
+            Login / Register <i class="fa-solid fa-arrow-right ml-1.5"></i>
+          </div>
+        </div>
+
+        <!-- Principal / HOD Card -->
+        <div onclick="openLogin('hod')" class="role-card bg-slate-900 border border-slate-800 hover:border-purple-500 p-6 rounded-2xl shadow-xl flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-purple-600/20 text-purple-400 flex items-center justify-center text-2xl mb-4">
+              <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-1">Principal / HOD</h3>
+            <p class="text-xs text-slate-400 mb-4">College-wide attendance analytics, defaulters list (&lt;75%), and branch metrics.</p>
+          </div>
+          <div class="text-purple-400 text-xs font-bold flex items-center">
+            Admin Login <i class="fa-solid fa-arrow-right ml-1.5"></i>
+          </div>
+        </div>
+
+        <!-- Parents Card -->
+        <div onclick="openParentModal()" class="role-card bg-slate-900 border border-slate-800 hover:border-amber-500 p-6 rounded-2xl shadow-xl flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-amber-600/20 text-amber-400 flex items-center justify-center text-2xl mb-4">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-1">Parents Portal</h3>
+            <p class="text-xs text-slate-400 mb-4">No password needed! Simply enter student's special code to inspect records.</p>
+          </div>
+          <div class="text-amber-400 text-xs font-bold flex items-center">
+            Track Student <i class="fa-solid fa-magnifying-glass ml-1.5"></i>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick Demo Access Bar -->
+      <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl text-center space-y-2">
+        <span class="text-xs text-slate-400 font-semibold block">⚡ Quick 1-Click Demo Login (No typing needed):</span>
+        <div class="flex flex-wrap justify-center gap-2">
+          <button onclick="quickDemoLogin('teacher')" class="px-3 py-1.5 bg-emerald-900/50 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 text-xs font-bold rounded-lg transition">Demo Teacher (EMP201)</button>
+          <button onclick="quickDemoLogin('student')" class="px-3 py-1.5 bg-indigo-900/50 hover:bg-indigo-800 text-indigo-300 border border-indigo-700 text-xs font-bold rounded-lg transition">Demo Student (PRN101)</button>
+          <button onclick="quickDemoLogin('hod')" class="px-3 py-1.5 bg-purple-900/50 hover:bg-purple-800 text-purple-300 border border-purple-700 text-xs font-bold rounded-lg transition">Demo HOD (HOD001)</button>
+          <button onclick="quickDemoParent()" class="px-3 py-1.5 bg-amber-900/50 hover:bg-amber-800 text-amber-300 border border-amber-700 text-xs font-bold rounded-lg transition">Demo Parent (PARENT-PRN101)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 2. AUTH MODAL (LOGIN & REGISTER) ================= -->
+    <div id="auth-modal" style="display: none;" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div class="bg-slate-900 border border-slate-700 w-full max-w-md p-6 rounded-2xl shadow-2xl relative">
+        <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <h3 id="auth-title" class="text-2xl font-black text-white mb-1">Login</h3>
+        <p id="auth-subtitle" class="text-xs text-slate-400 mb-5">Enter your institutional credentials</p>
+
+        <!-- Toggle Login / Register -->
+        <div id="auth-tabs" class="flex bg-slate-950 p-1 rounded-xl mb-4 border border-slate-800">
+          <button type="button" id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2 text-xs font-bold rounded-lg bg-indigo-600 text-white">Login</button>
+          <button type="button" id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white">Create Account</button>
+        </div>
+
+        <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+          <div id="field-name" style="display: none;">
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
+            <input type="text" id="auth-name" placeholder="e.g. Prof. Rajesh Sharma / Rohan Patil" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+
+          <div id="field-code">
+            <label id="label-identifier" class="block text-xs font-semibold text-slate-300 mb-1">Roll No (PRN) / Employee ID</label>
+            <input type="text" id="auth-identifier" required placeholder="e.g. PRN101 or EMP201" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+
+          <div id="field-dept" style="display: none;">
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Department</label>
+            <select id="auth-dept" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+              <option value="Computer Engineering">Computer Engineering</option>
+              <option value="Data Science">Data Science</option>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Mechanical Engineering">Mechanical Engineering</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+            <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+
+          <button type="submit" id="auth-submit-btn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-sm transition shadow-lg mt-2">
+            Submit & Enter
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ================= 3. PARENT MODAL ================= -->
+    <div id="parent-modal" style="display: none;" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div class="bg-slate-900 border border-slate-700 w-full max-w-md p-6 rounded-2xl shadow-2xl relative">
+        <button onclick="closeParentModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-2xl mb-3">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h3 class="text-2xl font-black text-white mb-1">Parents Tracking Portal</h3>
+        <p class="text-xs text-slate-400 mb-5">Enter your student's unique security code to view real-time records.</p>
+
+        <form onsubmit="handleParentSearch(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Student Parent Code / Roll No</label>
+            <input type="text" id="parent-student-code" required placeholder="e.g. PARENT-PRN101 or PRN101" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <button type="submit" class="w-full py-3 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl text-sm transition shadow-lg">
+            <i class="fa-solid fa-magnifying-glass mr-1"></i> Track Attendance
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ================= 4. TEACHER DASHBOARD ================= -->
+    <div id="teacher-view" style="display: none;" class="space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900 p-5 rounded-2xl border border-slate-800">
+        <div>
+          <h2 class="text-2xl font-black text-white flex items-center">
+            <i class="fa-solid fa-chalkboard-user mr-2 text-emerald-400"></i> Faculty Dashboard
+          </h2>
+          <p id="teacher-welcome" class="text-xs text-slate-400 mt-1"></p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="showDynamicQRModal()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition flex items-center shadow-lg">
+            <i class="fa-solid fa-qrcode mr-1.5 text-sm"></i> Generate Dynamic QR (2-Min)
+          </button>
+          <button onclick="toggleCalendarView()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl text-xs transition border border-slate-700">
+            <i class="fa-solid fa-calendar-days mr-1.5"></i> Academic Calendar
+          </button>
+        </div>
+      </div>
+
+      <!-- Class Session Selector -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Course / Subject</label>
+          <select id="teacher-subject-select" onchange="renderTeacherStudentList()" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-white">
+            <option value="Data Structures & Algorithms">Data Structures & Algorithms</option>
+            <option value="Database Management (DBMS)">Database Management (DBMS)</option>
+            <option value="Python Programming">Python Programming</option>
+            <option value="Computer Networks">Computer Networks</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Session Date</label>
+          <input type="date" id="teacher-date-select" onchange="renderTeacherStudentList()" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-white">
+        </div>
+        <div class="flex items-end">
+          <button onclick="markAllStudents('P')" class="w-full py-2 bg-emerald-700/50 hover:bg-emerald-700 text-emerald-200 border border-emerald-600 rounded-lg text-xs font-bold">
+            Mark All Present (P)
+          </button>
+        </div>
+      </div>
+
+      <!-- Manual Attendance Register Grid (P / A / Late-Yellow) -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <div class="p-4 border-b border-slate-800 flex justify-between items-center">
+          <h3 class="text-sm font-bold text-white">Class Roster & Manual Toggle (P = Green | L = Yellow | A = Red)</h3>
+          <span class="text-xs text-slate-400 font-mono">COEM Roster</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-950 text-slate-400 uppercase font-bold">
+              <tr>
+                <th class="p-3">Roll No (PRN)</th>
+                <th class="p-3">Student Name</th>
+                <th class="p-3">Department</th>
+                <th class="p-3">Current Status</th>
+                <th class="p-3 text-center">Manual Toggle</th>
+              </tr>
+            </thead>
+            <tbody id="teacher-student-table" class="divide-y divide-slate-800">
+              <!-- JS Populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 5. DYNAMIC QR GENERATOR MODAL ================= -->
+    <div id="qr-modal" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center z-50 p-4">
+      <div class="bg-slate-900 border border-slate-700 w-full max-w-sm p-6 rounded-2xl shadow-2xl text-center relative">
+        <button onclick="closeDynamicQRModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <h3 class="text-lg font-bold text-white mb-1">COEM Dynamic Attendance QR</h3>
+        <p class="text-xs text-slate-400 mb-3" id="qr-subject-label"></p>
+
+        <!-- QR Display Box -->
+        <div class="bg-white p-3 rounded-2xl flex justify-center items-center shadow-inner mx-auto my-3 w-60 h-60">
+          <div id="qrcode-box"></div>
+        </div>
+
+        <!-- 2-Minute Progress Bar & Timer -->
+        <div class="space-y-1.5 mt-4">
+          <div class="flex justify-between text-xs font-bold">
+            <span class="text-slate-400">QR Code Rotates in:</span>
+            <span id="qr-timer" class="text-emerald-400 font-mono text-sm">02:00</span>
+          </div>
+          <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+            <div id="qr-progress" class="bg-emerald-500 h-full transition-all duration-1000 w-full"></div>
+          </div>
+          <p class="text-[11px] text-slate-500 mt-2">Screenshots or forwarded photos expire every 2 minutes.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 6. STUDENT DASHBOARD ================= -->
+    <div id="student-view" style="display: none;" class="space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900 p-5 rounded-2xl border border-slate-800">
+        <div>
+          <h2 class="text-2xl font-black text-white flex items-center">
+            <i class="fa-solid fa-user-graduate mr-2 text-indigo-400"></i> Student Portal
+          </h2>
+          <p id="student-welcome" class="text-xs text-slate-400 mt-1"></p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="openScannerModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs transition flex items-center shadow-lg">
+            <i class="fa-solid fa-camera mr-1.5"></i> Scan Live Teacher QR
+          </button>
+          <button onclick="toggleCalendarView()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl text-xs transition border border-slate-700">
+            <i class="fa-solid fa-calendar-days mr-1.5"></i> Academic Calendar
+          </button>
+        </div>
+      </div>
+
+      <!-- Student Stats Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+          <div class="text-xs text-slate-400">Attendance Percentage</div>
+          <div id="student-overall-perc" class="text-3xl font-black text-emerald-400 mt-1">100%</div>
+        </div>
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+          <div class="text-xs text-slate-400">Attended Sessions</div>
+          <div id="student-attended-count" class="text-3xl font-black text-white mt-1">0</div>
+        </div>
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+          <div class="text-xs text-slate-400">Parent Access Code</div>
+          <div id="student-security-code" class="text-sm font-mono font-bold text-amber-400 mt-2">---</div>
+        </div>
+      </div>
+
+      <!-- History Table -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <h3 class="text-sm font-bold text-white mb-3">My Attendance Log</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-950 text-slate-400 uppercase font-bold">
+              <tr>
+                <th class="p-3">Date</th>
+                <th class="p-3">Course / Subject</th>
+                <th class="p-3">Time</th>
+                <th class="p-3">Status</th>
+                <th class="p-3">Method</th>
+              </tr>
+            </thead>
+            <tbody id="student-attendance-table" class="divide-y divide-slate-800"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 7. SCANNER MODAL ================= -->
+    <div id="scanner-modal" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center z-50 p-4">
+      <div class="bg-slate-900 border border-slate-700 w-full max-w-sm p-6 rounded-2xl shadow-2xl text-center relative">
+        <button onclick="closeScannerModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <h3 class="text-lg font-bold text-white mb-1">Scan Faculty Live QR</h3>
+        <p class="text-xs text-slate-400 mb-4">Align the dynamic rotating QR within frame</p>
+
+        <div id="camera-reader" class="w-full rounded-xl overflow-hidden bg-black aspect-square"></div>
+        <div id="scan-status" class="mt-3 text-xs font-semibold text-indigo-400">Starting Camera...</div>
+      </div>
+    </div>
+
+    <!-- ================= 8. PRINCIPAL / HOD DASHBOARD ================= -->
+    <div id="hod-view" style="display: none;" class="space-y-6">
+      <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div>
+          <h2 class="text-2xl font-black text-white flex items-center">
+            <i class="fa-solid fa-building-columns mr-2 text-purple-400"></i> Principal & HOD Overview
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">COEM Departmental Performance & Defaulter Watch</p>
+        </div>
+        <button onclick="toggleCalendarView()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl text-xs border border-slate-700">
+          <i class="fa-solid fa-calendar-days mr-1.5"></i> Academic Calendar
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+          <div class="text-xs text-slate-400">Total Enrolled Students</div>
+          <div id="hod-total-students" class="text-3xl font-black text-white mt-1">0</div>
+        </div>
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+          <div class="text-xs text-slate-400">Faculty Members</div>
+          <div id="hod-total-teachers" class="text-3xl font-black text-indigo-400 mt-1">0</div>
+        </div>
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+          <div class="text-xs text-slate-400">Average Attendance</div>
+          <div id="hod-avg-attendance" class="text-3xl font-black text-emerald-400 mt-1">88%</div>
+        </div>
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+          <div class="text-xs text-slate-400">Defaulters (&lt;75%)</div>
+          <div id="hod-defaulter-count" class="text-3xl font-black text-red-400 mt-1">0</div>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <h3 class="text-sm font-bold text-white mb-3">All Students Attendance Performance</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-950 text-slate-400 uppercase font-bold">
+              <tr>
+                <th class="p-3">Roll No (PRN)</th>
+                <th class="p-3">Student Name</th>
+                <th class="p-3">Department</th>
+                <th class="p-3">Parent Code</th>
+                <th class="p-3">Attendance %</th>
+                <th class="p-3">Flag</th>
+              </tr>
+            </thead>
+            <tbody id="hod-students-table" class="divide-y divide-slate-800"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 9. PARENT ATTENDANCE VIEW ================= -->
+    <div id="parent-view" style="display: none;" class="space-y-6">
+      <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 flex justify-between items-center">
+        <div>
+          <h2 class="text-2xl font-black text-white flex items-center">
+            <i class="fa-solid fa-users mr-2 text-amber-400"></i> Student Record (Parent Portal)
+          </h2>
+          <p id="parent-student-header" class="text-xs text-slate-400 mt-1"></p>
+        </div>
+        <button onclick="showView('home-view')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold border border-slate-700">
+          <i class="fa-solid fa-arrow-left mr-1"></i> Back
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+          <div class="text-xs text-slate-400">Overall Attendance Score</div>
+          <div id="parent-overall-perc" class="text-3xl font-black mt-1">0%</div>
+        </div>
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+          <div class="text-xs text-slate-400">Breakdown (P / L / A)</div>
+          <div id="parent-status-breakdown" class="text-sm font-bold text-slate-300 mt-2">--</div>
+        </div>
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+          <div class="text-xs text-slate-400">Defaulter Status</div>
+          <div id="parent-defaulter-badge" class="text-sm font-bold mt-2">--</div>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <h3 class="text-sm font-bold text-white mb-3">Daily Attendance History</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-950 text-slate-400 uppercase font-bold">
+              <tr>
+                <th class="p-3">Date</th>
+                <th class="p-3">Course / Subject</th>
+                <th class="p-3">Time</th>
+                <th class="p-3">Status</th>
+              </tr>
+            </thead>
+            <tbody id="parent-history-table" class="divide-y divide-slate-800"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 10. ACADEMIC CALENDAR MODAL ================= -->
+    <div id="calendar-modal" style="display: none;" class="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center z-50 p-4">
+      <div class="bg-slate-900 border border-slate-700 w-full max-w-xl p-6 rounded-2xl shadow-2xl relative max-h-[85vh] overflow-y-auto">
+        <button onclick="toggleCalendarView()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <h3 class="text-xl font-bold text-white mb-1 flex items-center">
+          <i class="fa-solid fa-calendar-days text-indigo-400 mr-2"></i> Academic Year Calendar 2026–2027
+        </h3>
+        <p class="text-xs text-slate-400 mb-4">Official working days, holidays, and examination schedule</p>
+
+        <div class="space-y-2.5" id="calendar-event-list"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-900 border-t border-slate-800 py-3 text-center text-xs text-slate-500">
+    © 2026 College of Engineering and Management (COEM), Jalgaon. All Rights Reserved.
+  </footer>
+
+  <!-- ================= JAVASCRIPT ENGINE ================= -->
+  <script>
+    /* ================= INITIAL DB SEED DATA ================= */
+    const defaultData = {
+      users: [
+        { id: '1', name: 'Prof. Rajesh Sharma', identifier: 'EMP201', role: 'teacher', dept: 'Computer Engineering', pass: '1234' },
+        { id: '2', name: 'Dr. S. K. Joshi (HOD)', identifier: 'HOD001', role: 'hod', dept: 'Computer Engineering', pass: 'admin' },
+        { id: '3', name: 'Rohan Patil', identifier: 'PRN101', role: 'student', dept: 'Computer Engineering', pass: '1234', parentCode: 'PARENT-PRN101' },
+        { id: '4', name: 'Sneha More', identifier: 'PRN102', role: 'student', dept: 'Data Science', pass: '1234', parentCode: 'PARENT-PRN102' },
+        { id: '5', name: 'Amit Deshmukh', identifier: 'PRN103', role: 'student', dept: 'Information Technology', pass: '1234', parentCode: 'PARENT-PRN103' }
+      ],
+      attendance: [
+        { id: 'att-1', studentId: '3', date: '2026-08-15', subject: 'Data Structures & Algorithms', time: '10:00 AM', status: 'P', method: 'QR_SCAN' },
+        { id: 'att-2', studentId: '4', date: '2026-08-15', subject: 'Data Structures & Algorithms', time: '10:05 AM', status: 'L', method: 'MANUAL' },
+        { id: 'att-3', studentId: '5', date: '2026-08-15', subject: 'Data Structures & Algorithms', time: '---', status: 'A', method: 'MANUAL' }
+      ],
+      calendar: [
+        { date: '2026-08-15', name: 'Independence Day', type: 'Holiday' },
+        { date: '2026-09-05', name: 'Teachers Day Symposium', type: 'Event' },
+        { date: '2026-10-02', name: 'Mahatma Gandhi Jayanti', type: 'Holiday' },
+        { date: '2026-11-10', name: 'Diwali Vacations Start', type: 'Holiday' },
+        { date: '2026-12-15', name: 'End Semester Theory Exams', type: 'Exam' }
+      ]
+    };
+
+    let db = JSON.parse(localStorage.getItem('smart_attendance_db')) || defaultData;
+    function saveDB() { localStorage.setItem('smart_attendance_db', JSON.stringify(db)); }
+
+    // State Variables
+    let currentUser = null;
+    let authRole = 'student';
+    let authMode = 'login';
+    let currentQRSecret = '';
+    let qrTimerInterval = null;
+    let html5QrScanner = null;
+
+    document.getElementById('teacher-date-select').value = new Date().toISOString().split('T')[0];
+
+    /* ================= NAVIGATION ================= */
+    function showView(viewId) {
+      const views = ['home-view', 'teacher-view', 'student-view', 'hod-view', 'parent-view'];
+      views.forEach(v => {
+        const el = document.getElementById(v);
+        if (el) el.style.display = (v === viewId) ? 'block' : 'none';
+      });
+
+      const navUserInfo = document.getElementById('nav-user-info');
+      if (currentUser && viewId !== 'home-view' && viewId !== 'parent-view') {
+        navUserInfo.style.display = 'flex';
+        document.getElementById('user-badge').innerText = `${currentUser.name} (${currentUser.role.toUpperCase()})`;
+      } else {
+        navUserInfo.style.display = 'none';
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      if (qrTimerInterval) clearInterval(qrTimerInterval);
+      if (html5QrScanner) html5QrScanner.stop().catch(()=>{});
+      showView('home-view');
+    }
+
+    /* ================= AUTHENTICATION MODAL & LOGIC ================= */
+    function openLogin(role) {
+      authRole = role;
+      document.getElementById('auth-modal').style.display = 'flex';
+      document.getElementById('auth-title').innerText = `${role.toUpperCase()} Login`;
+      switchAuthTab('login');
+      
+      const tabBox = document.getElementById('auth-tabs');
+      if (role === 'hod') {
+        tabBox.style.display = 'none';
+      } else {
+        tabBox.style.display = 'flex';
+      }
+    }
+
+    function closeAuthModal() {
+      document.getElementById('auth-modal').style.display = 'none';
+    }
+
+    function switchAuthTab(mode) {
+      authMode = mode;
+      const tabLogin = document.getElementById('tab-login');
+      const tabRegister = document.getElementById('tab-register');
+      const fieldName = document.getElementById('field-name');
+      const fieldDept = document.getElementById('field-dept');
+      const submitBtn = document.getElementById('auth-submit-btn');
+
+      if (mode === 'login') {
+        tabLogin.className = 'flex-1 py-2 text-xs font-bold rounded-lg bg-indigo-600 text-white';
+        tabRegister.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white';
+        fieldName.style.display = 'none';
+        fieldDept.style.display = 'none';
+        submitBtn.innerText = 'Login';
+      } else {
+        tabRegister.className = 'flex-1 py-2 text-xs font-bold rounded-lg bg-indigo-600 text-white';
+        tabLogin.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white';
+        fieldName.style.display = 'block';
+        fieldDept.style.display = 'block';
+        submitBtn.innerText = 'Create Account';
+      }
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const identifier = document.getElementById('auth-identifier').value.trim();
+      const password = document.getElementById('auth-password').value.trim();
+
+      if (authMode === 'login') {
+        const user = db.users.find(u => u.identifier.toLowerCase() === identifier.toLowerCase() && u.pass === password && u.role === authRole);
+        if (user) {
+          currentUser = user;
+          closeAuthModal();
+          routeToUserDashboard();
+        } else {
+          alert('Invalid ID / PRN or Password!');
+        }
+      } else {
+        const name = document.getElementById('auth-name').value.trim();
+        const dept = document.getElementById('auth-dept').value;
+
+        if (db.users.find(u => u.identifier.toLowerCase() === identifier.toLowerCase())) {
+          alert('User already registered with this Roll No / Employee ID!');
+          return;
+        }
+
+        const newUser = {
+          id: Date.now().toString(),
+          name: name,
+          identifier: identifier,
+          role: authRole,
+          dept: dept,
+          pass: password,
+          parentCode: authRole === 'student' ? 'PARENT-' + identifier.toUpperCase() : undefined
+        };
+
+        db.users.push(newUser);
+        saveDB();
+        alert('Account created successfully!');
+        currentUser = newUser;
+        closeAuthModal();
+        routeToUserDashboard();
+      }
+    }
+
+    function quickDemoLogin(role) {
+      if (role === 'teacher') {
+        currentUser = db.users.find(u => u.identifier === 'EMP201');
+      } else if (role === 'student') {
+        currentUser = db.users.find(u => u.identifier === 'PRN101');
+      } else if (role === 'hod') {
+        currentUser = db.users.find(u => u.identifier === 'HOD001');
+      }
+      routeToUserDashboard();
+    }
+
+    function quickDemoParent() {
+      document.getElementById('parent-student-code').value = 'PARENT-PRN101';
+      handleParentSearch({ preventDefault: () => {} });
+    }
+
+    function routeToUserDashboard() {
+      if (currentUser.role === 'teacher') {
+        document.getElementById('teacher-welcome').innerText = `${currentUser.name} | Dept: ${currentUser.dept}`;
+        renderTeacherStudentList();
+        showView('teacher-view');
+      } else if (currentUser.role === 'student') {
+        document.getElementById('student-welcome').innerText = `${currentUser.name} (Roll: ${currentUser.identifier}) | Dept: ${currentUser.dept}`;
+        document.getElementById('student-security-code').innerText = currentUser.parentCode || 'N/A';
+        renderStudentDashboard();
+        showView('student-view');
+      } else if (currentUser.role === 'hod') {
+        renderHODDashboard();
+        showView('hod-view');
+      }
+    }
+
+    /* ================= 2-MINUTE DYNAMIC QR GENERATOR ================= */
+    function showDynamicQRModal() {
+      document.getElementById('qr-modal').style.display = 'flex';
+      const subject = document.getElementById('teacher-subject-select').value;
+      document.getElementById('qr-subject-label').innerText = subject;
+      generateRollingQR();
+      startQRCountdown();
+    }
+
+    function closeDynamicQRModal() {
+      document.getElementById('qr-modal').style.display = 'none';
+      if (qrTimerInterval) clearInterval(qrTimerInterval);
+    }
+
+    function generateRollingQR() {
+      const subject = document.getElementById('teacher-subject-select').value;
+      const date = document.getElementById('teacher-date-select').value;
+      const epochWindow = Math.floor(Date.now() / (1000 * 120));
+      currentQRSecret = btoa(`${subject}|${date}|${epochWindow}|COEM_${Math.random().toString(36).substring(7)}`);
+
+      const qrcodeContainer = document.getElementById('qrcode-box');
+      qrcodeContainer.innerHTML = '';
+      new QRCode(qrcodeContainer, {
+        text: currentQRSecret,
+        width: 210,
+        height: 210,
+        colorDark: '#0f172a',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }
+
+    function startQRCountdown() {
+      if (qrTimerInterval) clearInterval(qrTimerInterval);
+      let timeLeft = 120; // 2 minutes
+
+      const updateUI = () => {
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        document.getElementById('qr-timer').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        const perc = (timeLeft / 120) * 100;
+        document.getElementById('qr-progress').style.width = `${perc}%`;
+      };
+
+      updateUI();
+      qrTimerInterval = setInterval(() => {
+        timeLeft--;
+        updateUI();
+        if (timeLeft <= 0) {
+          timeLeft = 120;
+          generateRollingQR();
+        }
+      }, 1000);
+    }
+
+    /* ================= TEACHER MANUAL OVERRIDE (P / A / LATE) ================= */
+    function renderTeacherStudentList() {
+      const subject = document.getElementById('teacher-subject-select').value;
+      const date = document.getElementById('teacher-date-select').value;
+      const tableBody = document.getElementById('teacher-student-table');
+      tableBody.innerHTML = '';
+
+      const students = db.users.filter(u => u.role === 'student');
+
+      students.forEach(student => {
+        let record = db.attendance.find(a => a.studentId === student.id && a.date === date && a.subject === subject);
+        const currentStatus = record ? record.status : 'A';
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-800/60 transition';
+        tr.innerHTML = `
+          <td class="p-3 font-mono font-bold text-slate-300">${student.identifier}</td>
+          <td class="p-3 text-white font-semibold">${student.name}</td>
+          <td class="p-3 text-slate-400">${student.dept}</td>
+          <td class="p-3">
+            <span class="px-2.5 py-1 rounded-md text-[11px] font-black status-${currentStatus}">
+              ${currentStatus === 'P' ? 'PRESENT' : currentStatus === 'L' ? 'LATE (YELLOW)' : 'ABSENT'}
+            </span>
+          </td>
+          <td class="p-3">
+            <div class="flex justify-center space-x-1.5">
+              <button onclick="setStudentStatus('${student.id}', 'P')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded text-xs">P</button>
+              <button onclick="setStudentStatus('${student.id}', 'L')" class="px-2.5 py-1 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded text-xs">L</button>
+              <button onclick="setStudentStatus('${student.id}', 'A')" class="px-2.5 py-1 bg-red-600 hover:bg-red-500 text-white font-bold rounded text-xs">A</button>
+            </div>
+          </td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function setStudentStatus(studentId, newStatus) {
+      const subject = document.getElementById('teacher-subject-select').value;
+      const date = document.getElementById('teacher-date-select').value;
+
+      let recordIndex = db.attendance.findIndex(a => a.studentId === studentId && a.date === date && a.subject === subject);
+      const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      if (recordIndex >= 0) {
+        db.attendance[recordIndex].status = newStatus;
+        db.attendance[recordIndex].method = 'MANUAL';
+      } else {
+        db.attendance.push({
+          id: 'att-' + Date.now(),
+          studentId: studentId,
+          date: date,
+          subject: subject,
+          time: currentTime,
+          status: newStatus,
+          method: 'MANUAL'
+        });
+      }
+      saveDB();
+      renderTeacherStudentList();
+    }
+
+    function markAllStudents(status) {
+      const students = db.users.filter(u => u.role === 'student');
+      students.forEach(s => setStudentStatus(s.id, status));
+    }
+
+    /* ================= STUDENT SCANNER & DASHBOARD ================= */
+    function renderStudentDashboard() {
+      const records = db.attendance.filter(a => a.studentId === currentUser.id);
+      const totalP = records.filter(r => r.status === 'P' || r.status === 'L').length;
+      const totalLectures = Math.max(records.length, 1);
+      const percentage = Math.round((totalP / totalLectures) * 100);
+
+      document.getElementById('student-overall-perc').innerText = `${records.length === 0 ? 100 : percentage}%`;
+      document.getElementById('student-attended-count').innerText = totalP;
+
+      const table = document.getElementById('student-attendance-table');
+      table.innerHTML = '';
+      if (records.length === 0) {
+        table.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No attendance records found yet.</td></tr>`;
+        return;
+      }
+
+      records.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-3 text-slate-300">${r.date}</td>
+          <td class="p-3 text-white font-medium">${r.subject}</td>
+          <td class="p-3 text-slate-400">${r.time}</td>
+          <td class="p-3">
+            <span class="px-2 py-0.5 rounded text-[11px] font-bold status-${r.status}">
+              ${r.status === 'P' ? 'PRESENT' : r.status === 'L' ? 'LATE' : 'ABSENT'}
+            </span>
+          </td>
+          <td class="p-3 text-slate-400">${r.method}</td>
+        `;
+        table.appendChild(tr);
+      });
+    }
+
+    function openScannerModal() {
+      document.getElementById('scanner-modal').style.display = 'flex';
+      document.getElementById('scan-status').innerText = 'Starting Camera Scanner...';
+
+      html5QrScanner = new Html5Qrcode("camera-reader");
+      html5QrScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        (decodedText) => {
+          handleQRScannedSuccess(decodedText);
+        },
+        (error) => {}
+      ).catch(err => {
+        document.getElementById('scan-status').innerText = 'Camera permission required / Camera not found!';
+      });
+    }
+
+    function closeScannerModal() {
+      document.getElementById('scanner-modal').style.display = 'none';
+      if (html5QrScanner) {
+        html5QrScanner.stop().catch(() => {}).then(() => {
+          document.getElementById('camera-reader').innerHTML = '';
+        });
+      }
+    }
+
+    function handleQRScannedSuccess(qrPayload) {
+      try {
+        const decoded = atob(qrPayload);
+        const [subject, date, epochWindow] = decoded.split('|');
+        const currentEpoch = Math.floor(Date.now() / (1000 * 120));
+
+        if (Math.abs(currentEpoch - parseInt(epochWindow)) > 1) {
+          alert('This QR Code has EXPIRED! Ask teacher for live dynamic QR.');
+          closeScannerModal();
+          return;
+        }
+
+        const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        let record = db.attendance.find(a => a.studentId === currentUser.id && a.date === date && a.subject === subject);
+        if (record) {
+          record.status = 'P';
+          record.method = 'QR_SCAN';
+          record.time = currentTime;
+        } else {
+          db.attendance.push({
+            id: 'att-' + Date.now(),
+            studentId: currentUser.id,
+            date: date,
+            subject: subject,
+            time: currentTime,
+            status: 'P',
+            method: 'QR_SCAN'
+          });
+        }
+        saveDB();
+        alert(`Success! Marked PRESENT for ${subject}.`);
+        closeScannerModal();
+        renderStudentDashboard();
+      } catch (e) {
+        alert('Invalid attendance QR code payload!');
+      }
+    }
+
+    /* ================= PRINCIPAL / HOD DASHBOARD ================= */
+    function renderHODDashboard() {
+      const students = db.users.filter(u => u.role === 'student');
+      const teachers = db.users.filter(u => u.role === 'teacher');
+      document.getElementById('hod-total-students').innerText = students.length;
+      document.getElementById('hod-total-teachers').innerText = teachers.length;
+
+      let defaulterCount = 0;
+      const table = document.getElementById('hod-students-table');
+      table.innerHTML = '';
+
+      students.forEach(student => {
+        const records = db.attendance.filter(a => a.studentId === student.id);
+        const presentCount = records.filter(r => r.status === 'P' || r.status === 'L').length;
+        const total = Math.max(records.length, 1);
+        const perc = records.length === 0 ? 100 : Math.round((presentCount / total) * 100);
+
+        if (perc < 75) defaulterCount++;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-3 font-mono font-bold text-slate-300">${student.identifier}</td>
+          <td class="p-3 text-white font-semibold">${student.name}</td>
+          <td class="p-3 text-slate-400">${student.dept}</td>
+          <td class="p-3 font-mono text-amber-400">${student.parentCode || 'N/A'}</td>
+          <td class="p-3 font-bold ${perc < 75 ? 'text-red-400' : 'text-emerald-400'}">${perc}%</td>
+          <td class="p-3">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${perc < 75 ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-emerald-500/20 text-emerald-400'}">
+              ${perc < 75 ? 'DEFUALTER (<75%)' : 'NORMAL'}
+            </span>
+          </td>
+        `;
+        table.appendChild(tr);
+      });
+
+      document.getElementById('hod-defaulter-count').innerText = defaulterCount;
+    }
+
+    /* ================= PARENT ACCESS ================= */
+    function openParentModal() {
+      document.getElementById('parent-modal').style.display = 'flex';
+    }
+    function closeParentModal() {
+      document.getElementById('parent-modal').style.display = 'none';
+    }
+
+    function handleParentSearch(e) {
+      if (e) e.preventDefault();
+      const code = document.getElementById('parent-student-code').value.trim();
+      
+      const student = db.users.find(u => u.role === 'student' && (u.parentCode?.toLowerCase() === code.toLowerCase() || u.identifier.toLowerCase() === code.toLowerCase()));
+      
+      if (!student) {
+        alert('No student found with this Parent Code / Roll Number!');
+        return;
+      }
+
+      closeParentModal();
+      document.getElementById('parent-student-header').innerText = `Student: ${student.name} (Roll: ${student.identifier}) | Dept: ${student.dept}`;
+
+      const records = db.attendance.filter(a => a.studentId === student.id);
+      const pCount = records.filter(r => r.status === 'P').length;
+      const lCount = records.filter(r => r.status === 'L').length;
+      const aCount = records.filter(r => r.status === 'A').length;
+      const total = Math.max(records.length, 1);
+      const perc = records.length === 0 ? 100 : Math.round(((pCount + lCount) / total) * 100);
+
+      const percElem = document.getElementById('parent-overall-perc');
+      percElem.innerText = `${perc}%`;
+      percElem.className = `text-3xl font-black mt-1 ${perc < 75 ? 'text-red-400' : 'text-emerald-400'}`;
+
+      document.getElementById('parent-status-breakdown').innerText = `Present: ${pCount} | Late: ${lCount} | Absent: ${aCount}`;
+      
+      const defBadge = document.getElementById('parent-defaulter-badge');
+      if (perc < 75) {
+        defBadge.innerHTML = '<span class="text-red-400 bg-red-900/30 px-2 py-1 rounded border border-red-700">⚠️ Low Attendance Warning (&lt;75%)</span>';
+      } else {
+        defBadge.innerHTML = '<span class="text-emerald-400 bg-emerald-900/30 px-2 py-1 rounded border border-emerald-700">✅ Satisfactory Attendance</span>';
+      }
+
+      const table = document.getElementById('parent-history-table');
+      table.innerHTML = '';
+      if (records.length === 0) {
+        table.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-slate-500">No attendance records logged yet.</td></tr>`;
+      } else {
+        records.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="p-3 text-slate-300">${r.date}</td>
+            <td class="p-3 text-white font-medium">${r.subject}</td>
+            <td class="p-3 text-slate-400">${r.time}</td>
+            <td class="p-3"><span class="px-2 py-0.5 rounded text-[11px] font-bold status-${r.status}">${r.status === 'P' ? 'PRESENT' : r.status === 'L' ? 'LATE' : 'ABSENT'}</span></td>
+          `;
+          table.appendChild(tr);
+        });
+      }
+
+      showView('parent-view');
+    }
+
+    /* ================= ACADEMIC CALENDAR ================= */
+    function toggleCalendarView() {
+      const modal = document.getElementById('calendar-modal');
+      const isHidden = modal.style.display === 'none' || modal.style.display === '';
+      modal.style.display = isHidden ? 'flex' : 'none';
+
+      if (isHidden) {
+        const list = document.getElementById('calendar-event-list');
+        list.innerHTML = '';
+        db.calendar.forEach(ev => {
+          const div = document.createElement('div');
+          div.className = 'p-3 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-between';
+          div.innerHTML = `
+            <div>
+              <div class="text-xs font-mono text-indigo-400 font-bold">${ev.date}</div>
+              <div class="text-sm font-semibold text-white">${ev.name}</div>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${ev.type === 'Holiday' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : ev.type === 'Exam' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-blue-500/20 text-blue-400'}">
+              ${ev.type.toUpperCase()}
+            </span>
+          `;
+          list.appendChild(div);
+        });
+      }
+    }
+  </script>
+</body>
+</html>
