@@ -3,1043 +3,322 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMP - Smart Attendance Portal | KCE COEM Jalgaon</title>
-    <!-- Tailwind CSS CDN -->
+    <title>COEM Attendance Portal - KCE Society's College of Engineering & Management</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- QR Code Generator & Scanner CDN -->
+    <!-- QR Code Generator & Scanner -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
-
     <style>
-        :root {
-            --primary-blue: #1e3a8a;
-            --accent-gold: #d97706;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        
         body {
-            background-color: #f8fafc;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0f172a;
+            color: #1e293b;
         }
-        .bg-kce-pattern {
-            background-color: #ffffff;
-            background-image: radial-gradient(#1e3a8a 0.5px, transparent 0.5px), radial-gradient(#d97706 0.5px, #ffffff 0.5px);
-            background-size: 20px 20px;
-            background-position: 0 0, 10px 10px;
-            background-opacity: 0.05;
+
+        /* College Background with subtle light overlay */
+        .bg-college {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.92), rgba(241, 245, 249, 0.95)), url('KCE collage image.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
-        .qr-overlay-container {
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+        }
+
+        /* QR Code Container with Center Watermark Logo */
+        .qr-watermark-wrapper {
             position: relative;
             display: inline-block;
+            padding: 16px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
         }
-        .qr-logo-bg {
+
+        .qr-watermark-logo {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 50px;
-            height: 50px;
-            opacity: 0.25;
-            pointer-events: none;
+            width: 54px;
+            height: 54px;
+            background: white;
+            border-radius: 50%;
+            padding: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
+
+        /* Scrollbar custom */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; }
+            .glass-panel { box-shadow: none !important; border: 1px solid #ccc !important; }
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+<body class="bg-college min-h-screen flex flex-col">
 
-    <!-- TOP HEADER -->
-    <header class="bg-white border-b-2 border-blue-900 shadow-md px-6 py-3 flex justify-between items-center sticky top-0 z-50">
-        <div class="flex items-center space-x-3">
-            <div class="bg-blue-900 text-white font-bold px-3 py-1 rounded-lg text-xl tracking-wider">
-                SMP
+    <!-- Top Header Navigation Bar -->
+    <header class="bg-white/95 backdrop-blur shadow-md sticky top-0 z-50 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
+            
+            <!-- Logo and College Name -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchPortal('student-login')">
+                <img src="WhatsApp Image 2026-08-19 at 10.34.44 AM.jpeg" alt="KCE Logo" class="h-12 w-12 object-contain rounded-full border border-blue-100 shadow-sm">
+                <div>
+                    <h1 class="text-sm font-extrabold text-blue-900 tracking-tight leading-tight uppercase">K.C.E. Society's</h1>
+                    <p class="text-xs font-bold text-slate-700">College of Engineering & Management, Jalgaon</p>
+                    <p class="text-[10px] text-blue-600 font-medium hidden sm:block">Automated Smart Attendance Portal</p>
+                </div>
             </div>
-            <div>
-                <h1 class="text-lg font-bold text-blue-900 leading-tight">KCE Society's COEM Jalgaon</h1>
-                <p class="text-xs text-amber-600 font-semibold">Smart Attendance Portal</p>
-            </div>
-        </div>
 
-        <!-- TOP RIGHT LOGINS -->
-        <div class="flex items-center space-x-3">
-            <button onclick="switchView('admin-login')" class="bg-blue-900 text-white text-xs md:text-sm px-3 py-1.5 rounded-md hover:bg-blue-800 transition flex items-center gap-1 font-medium">
-                <i class="fa-solid fa-user-shield"></i> Admin Login
-            </button>
-            <button onclick="switchView('principal-login')" class="bg-amber-600 text-white text-xs md:text-sm px-3 py-1.5 rounded-md hover:bg-amber-700 transition flex items-center gap-1 font-medium">
-                <i class="fa-solid fa-user-tie"></i> Principal Login
-            </button>
+            <!-- Quick Access Nav Badges -->
+            <div class="flex flex-wrap items-center gap-2 text-xs">
+                <button onclick="switchPortal('student-login')" class="portal-tab-btn flex items-center gap-1.5 px-3 py-1.5 rounded-full font-semibold transition-all bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200">
+                    <i class="fa-solid fa-user-graduate"></i> Student
+                </button>
+                <button onclick="switchPortal('teacher-login')" class="portal-tab-btn flex items-center gap-1.5 px-3 py-1.5 rounded-full font-semibold transition-all bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200">
+                    <i class="fa-solid fa-chalkboard-user"></i> Teacher
+                </button>
+                <button onclick="switchPortal('hod-login')" class="portal-tab-btn flex items-center gap-1.5 px-3 py-1.5 rounded-full font-semibold transition-all bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200">
+                    <i class="fa-solid fa-user-tie"></i> HOD
+                </button>
+                <button onclick="switchPortal('principal-login')" class="portal-tab-btn flex items-center gap-1.5 px-3 py-1.5 rounded-full font-semibold transition-all bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200">
+                    <i class="fa-solid fa-building-columns"></i> Principal
+                </button>
+                <button onclick="switchPortal('parent-login')" class="portal-tab-btn flex items-center gap-1.5 px-3 py-1.5 rounded-full font-semibold transition-all bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200">
+                    <i class="fa-solid fa-users-between-lines"></i> Parents
+                </button>
+                
+                <!-- Admin Top Right Access -->
+                <button onclick="switchPortal('admin-login')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-extrabold transition-all bg-rose-600 text-white hover:bg-rose-700 shadow-sm ml-2">
+                    <i class="fa-solid fa-shield-halved"></i> Admin
+                </button>
+
+                <!-- Active Session Indicator -->
+                <div id="session-badge" class="hidden items-center gap-2 pl-2 border-l border-slate-300">
+                    <span id="session-username" class="font-bold text-slate-800 text-xs"></span>
+                    <button onclick="logout()" title="Logout" class="text-rose-600 hover:text-rose-800 font-bold bg-rose-50 px-2 py-1 rounded-md">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+
         </div>
     </header>
 
-    <!-- NAVIGATION / BREADCRUMB & BACK BUTTON -->
-    <div class="bg-slate-200 px-6 py-2 flex justify-between items-center text-sm shadow-inner">
-        <button onclick="goBack()" class="bg-white border border-slate-300 text-slate-700 px-3 py-1 rounded hover:bg-slate-100 flex items-center gap-2 font-medium">
-            <i class="fa-solid fa-arrow-left"></i> Back
-        </button>
-        <div id="user-status-bar" class="text-xs font-semibold text-slate-600">
-            Status: <span id="current-role-display" class="text-blue-900">Guest</span>
+    <!-- Global Notification Banner -->
+    <div id="notification-banner" class="hidden max-w-4xl mx-auto mt-3 px-4">
+        <div id="notification-box" class="p-4 rounded-xl flex items-center justify-between shadow-lg text-sm font-semibold">
+            <div class="flex items-center gap-3">
+                <i id="notification-icon" class="fa-solid fa-circle-info text-xl"></i>
+                <span id="notification-msg">Notification message</span>
+            </div>
+            <button onclick="hideNotification()" class="text-slate-500 hover:text-slate-800"><i class="fa-solid fa-xmark"></i></button>
         </div>
     </div>
 
-    <!-- MAIN CONTAINER -->
-    <main class="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full">
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
 
-        <!-- ALERTS / NOTIFICATIONS -->
-        <div id="alert-box" class="hidden mb-4 p-4 rounded-lg text-sm font-medium"></div>
-
-        <!-- 1. LANDING PAGE / ROLE SELECTION -->
-        <section id="view-landing" class="view-section">
-            <div class="text-center max-w-2xl mx-auto my-8">
-                <h2 class="text-3xl font-extrabold text-blue-950 mb-2">Welcome to Smart Attendance Portal</h2>
-                <p class="text-slate-600 text-sm">Select your portal to continue</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-6">
-                <!-- Student Card -->
-                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-lg hover:shadow-2xl transition text-center flex flex-col items-center">
-                    <div class="w-16 h-16 bg-blue-100 text-blue-900 rounded-full flex items-center justify-center text-2xl mb-4">
+        <!-- ================================================================= -->
+        <!-- 1. STUDENT PORTAL SECTION -->
+        <!-- ================================================================= -->
+        
+        <!-- Student Login Card -->
+        <section id="student-login-view" class="portal-view max-w-md mx-auto my-6">
+            <div class="glass-panel p-8 rounded-2xl shadow-xl border border-white">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl shadow-inner">
                         <i class="fa-solid fa-user-graduate"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-slate-800 mb-2">Student Portal</h3>
-                    <p class="text-xs text-slate-500 mb-6">Scan QR, view attendance & time-table</p>
-                    <div class="w-full space-y-2">
-                        <button onclick="switchView('student-login')" class="w-full bg-blue-900 text-white py-2 rounded-lg font-semibold hover:bg-blue-800 transition">Login</button>
-                        <button onclick="switchView('student-register')" class="w-full border border-blue-900 text-blue-900 py-2 rounded-lg font-semibold hover:bg-blue-50 transition">Create Account</button>
-                    </div>
+                    <h2 class="text-2xl font-extrabold text-slate-800">Student Login</h2>
+                    <p class="text-xs text-slate-500 mt-1">Enter your PRN and Password to access your attendance</p>
                 </div>
 
-                <!-- Faculty Card -->
-                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-lg hover:shadow-2xl transition text-center flex flex-col items-center">
-                    <div class="w-16 h-16 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center text-2xl mb-4">
-                        <i class="fa-solid fa-chalkboard-user"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-800 mb-2">Faculty / HOD Portal</h3>
-                    <p class="text-xs text-slate-500 mb-6">Generate dynamic QR & manage class</p>
-                    <div class="w-full space-y-2">
-                        <button onclick="switchView('faculty-login')" class="w-full bg-amber-600 text-white py-2 rounded-lg font-semibold hover:bg-amber-700 transition">Faculty Login</button>
-                        <button onclick="switchView('faculty-register')" class="w-full border border-amber-600 text-amber-700 py-2 rounded-lg font-semibold hover:bg-amber-50 transition">Register (EMP ID)</button>
-                    </div>
-                </div>
-
-                <!-- Parents Card -->
-                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-lg hover:shadow-2xl transition text-center flex flex-col items-center">
-                    <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center text-2xl mb-4">
-                        <i class="fa-solid fa-users"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-800 mb-2">Parent Portal</h3>
-                    <p class="text-xs text-slate-500 mb-6">Track ward's monthly & weekly attendance</p>
-                    <button onclick="switchView('parent-login')" class="w-full bg-emerald-700 text-white py-2 rounded-lg font-semibold hover:bg-emerald-800 transition mt-auto">Parent Login</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- 2. STUDENT REGISTER -->
-        <section id="view-student-register" class="view-section hidden">
-            <div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-lg border border-slate-200">
-                <h2 class="text-2xl font-bold text-blue-900 mb-4 text-center">Student Registration</h2>
-                <form id="student-reg-form" onsubmit="handleStudentRegister(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Full Name</label>
-                        <input type="text" id="st-name" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-blue-900 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">PRN No.</label>
-                        <input type="text" id="st-prn" placeholder="Enter your PRN No." required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-blue-900 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Stream / Option</label>
-                        <select id="st-stream" onchange="handleStreamChange()" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-blue-900 outline-none">
-                            <option value="">Select Stream</option>
-                            <option value="Diploma">Diploma</option>
-                            <option value="Engineering">Engineering</option>
-                        </select>
-                    </div>
-                    <div id="degree-type-div" class="hidden">
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Degree Program</label>
-                        <select id="st-degree" class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-blue-900 outline-none">
-                            <option value="B.Tech">B.Tech</option>
-                            <option value="M.Tech">M.Tech</option>
-                            <option value="B.Voc">B.Voc</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Branch / Specialization</label>
-                        <select id="st-branch" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-blue-900 outline-none">
-                            <option value="">Select Branch</option>
-                            <option value="Computer Science">Computer Science</option>
-                            <option value="Data Science">Data Science</option>
-                            <option value="Electrical Engineer">Electrical Engineer</option>
-                            <option value="Mechanical Engineer">Mechanical Engineer</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Password</label>
-                        <input type="password" id="st-pass" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-blue-900 outline-none">
-                    </div>
-                    <button type="submit" class="w-full bg-blue-900 text-white py-2 rounded-lg font-bold hover:bg-blue-800 transition">Submit for Approval</button>
-                </form>
-            </div>
-        </section>
-
-        <!-- 3. STUDENT LOGIN -->
-        <section id="view-student-login" class="view-section hidden">
-            <div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-lg border border-slate-200">
-                <h2 class="text-2xl font-bold text-blue-900 mb-4 text-center">Student Login</h2>
                 <form onsubmit="handleStudentLogin(event)" class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">PRN No.</label>
-                        <input type="text" id="login-prn" placeholder="Enter your PRN No." required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-blue-900 outline-none">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Enter Your PRN No.*</label>
+                        <input type="text" id="stud-login-prn" required placeholder="e.g. 20260101" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm outline-none transition">
                     </div>
+
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Password</label>
-                        <input type="password" id="login-st-pass" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-blue-900 outline-none">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Password*</label>
+                        <input type="password" id="stud-login-pass" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm outline-none transition">
                     </div>
-                    <button type="submit" class="w-full bg-blue-900 text-white py-2 rounded-lg font-bold hover:bg-blue-800 transition">Login</button>
+
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-md transition transform active:scale-95 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-right-to-bracket"></i> Login to Dashboard
+                    </button>
                 </form>
-            </div>
-        </section>
 
-        <!-- 4. FACULTY / HOD REGISTER -->
-        <section id="view-faculty-register" class="view-section hidden">
-            <div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-lg border border-slate-200">
-                <h2 class="text-2xl font-bold text-amber-700 mb-4 text-center">Faculty / HOD Registration</h2>
-                <form onsubmit="handleFacultyRegister(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Full Name</label>
-                        <input type="text" id="fac-name" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-amber-600 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">EMP ID</label>
-                        <input type="text" id="fac-empid" placeholder="Enter Employee ID" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-amber-600 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Role</label>
-                        <select id="fac-role" class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-amber-600 outline-none">
-                            <option value="Teacher">Teacher</option>
-                            <option value="HOD">HOD</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Department</label>
-                        <select id="fac-dept" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-amber-600 outline-none">
-                            <option value="Data Science">Data Science</option>
-                            <option value="Computer Science">Computer Science</option>
-                            <option value="Electrical Engineer">Electrical Engineer</option>
-                            <option value="Mechanical Engineer">Mechanical Engineer</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Password</label>
-                        <input type="password" id="fac-pass" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-amber-600 outline-none">
-                    </div>
-                    <button type="submit" class="w-full bg-amber-600 text-white py-2 rounded-lg font-bold hover:bg-amber-700 transition">Submit for Principal Approval</button>
-                </form>
-            </div>
-        </section>
-
-        <!-- 5. FACULTY LOGIN -->
-        <section id="view-faculty-login" class="view-section hidden">
-            <div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-lg border border-slate-200">
-                <h2 class="text-2xl font-bold text-amber-700 mb-4 text-center">Faculty / HOD Login</h2>
-                <form onsubmit="handleFacultyLogin(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">EMP ID</label>
-                        <input type="text" id="login-empid" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-amber-600 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Password</label>
-                        <input type="password" id="login-fac-pass" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-amber-600 outline-none">
-                    </div>
-                    <button type="submit" class="w-full bg-amber-600 text-white py-2 rounded-lg font-bold hover:bg-amber-700 transition">Login</button>
-                </form>
-            </div>
-        </section>
-
-        <!-- 6. PARENT LOGIN -->
-        <section id="view-parent-login" class="view-section hidden">
-            <div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-lg border border-slate-200">
-                <h2 class="text-2xl font-bold text-emerald-800 mb-4 text-center">Parent Portal Login</h2>
-                <form onsubmit="handleParentLogin(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Student PRN No.</label>
-                        <input type="text" id="parent-prn" placeholder="Enter Ward's PRN" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-emerald-600 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Student Password</label>
-                        <input type="password" id="parent-pass" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-emerald-600 outline-none">
-                    </div>
-                    <button type="submit" class="w-full bg-emerald-700 text-white py-2 rounded-lg font-bold hover:bg-emerald-800 transition">View Dashboard</button>
-                </form>
-            </div>
-        </section>
-
-        <!-- 7. ADMIN LOGIN -->
-        <section id="view-admin-login" class="view-section hidden">
-            <div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-lg border border-blue-900">
-                <h2 class="text-2xl font-bold text-blue-900 mb-4 text-center"><i class="fa-solid fa-lock"></i> System Admin Access</h2>
-                <form onsubmit="handleAdminLogin(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Admin User</label>
-                        <input type="text" id="admin-user" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-blue-900 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Password</label>
-                        <input type="password" id="admin-pass" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-blue-900 outline-none">
-                    </div>
-                    <button type="submit" class="w-full bg-blue-900 text-white py-2 rounded-lg font-bold hover:bg-blue-800 transition">Admin Login</button>
-                </form>
-            </div>
-        </section>
-
-        <!-- 8. PRINCIPAL LOGIN -->
-        <section id="view-principal-login" class="view-section hidden">
-            <div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-lg border border-amber-600">
-                <h2 class="text-2xl font-bold text-amber-700 mb-4 text-center"><i class="fa-solid fa-user-tie"></i> Principal Access</h2>
-                <form onsubmit="handlePrincipalLogin(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Login ID</label>
-                        <input type="text" id="pr-user" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-amber-600 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Password</label>
-                        <input type="password" id="pr-pass" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-amber-600 outline-none">
-                    </div>
-                    <button type="submit" class="w-full bg-amber-600 text-white py-2 rounded-lg font-bold hover:bg-amber-700 transition">Principal Login</button>
-                </form>
-            </div>
-        </section>
-
-        <!-- 9. ADMIN DASHBOARD -->
-        <section id="view-admin-dashboard" class="view-section hidden">
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
-                <div class="flex justify-between items-center mb-6 pb-4 border-b">
-                    <h2 class="text-2xl font-bold text-blue-900">Admin Control Center</h2>
-                    <button onclick="logout()" class="text-sm bg-red-600 text-white px-3 py-1 rounded">Logout</button>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                        <p class="text-xs font-bold text-blue-800">Pending Student Approvals</p>
-                        <p id="cnt-pending-st" class="text-2xl font-black text-blue-900">0</p>
-                    </div>
-                    <div class="bg-amber-50 p-4 rounded-lg border border-amber-200">
-                        <p class="text-xs font-bold text-amber-800">Registered Students</p>
-                        <p id="cnt-active-st" class="text-2xl font-black text-amber-900">0</p>
-                    </div>
-                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                        <p class="text-xs font-bold text-slate-700">Total System Users</p>
-                        <p id="cnt-total-users" class="text-2xl font-black text-slate-900">0</p>
-                    </div>
-                </div>
-
-                <h3 class="text-lg font-bold text-slate-800 mb-3">Pending Student Approvals</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left border">
-                        <thead class="bg-slate-100 text-slate-700 uppercase text-xs">
-                            <tr>
-                                <th class="p-3 border">PRN</th>
-                                <th class="p-3 border">Name</th>
-                                <th class="p-3 border">Branch</th>
-                                <th class="p-3 border">Stream</th>
-                                <th class="p-3 border">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbl-pending-students">
-                            <!-- JS injected -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- 10. STUDENT DASHBOARD -->
-        <section id="view-student-dashboard" class="view-section hidden">
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 space-y-6">
-                <div class="flex justify-between items-center border-b pb-4">
-                    <div>
-                        <h2 id="st-dash-name" class="text-2xl font-bold text-blue-900">Student Portal</h2>
-                        <p id="st-dash-prn" class="text-xs text-slate-500"></p>
-                    </div>
-                    <button onclick="logout()" class="text-sm bg-red-600 text-white px-3 py-1 rounded">Logout</button>
-                </div>
-
-                <!-- CAMERA SCANNER SECTION -->
-                <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 text-center">
-                    <h3 class="text-lg font-bold text-slate-800 mb-2"><i class="fa-solid fa-camera"></i> Scan Classroom QR Code</h3>
-                    <p class="text-xs text-slate-500 mb-4">Click below to open camera and scan teacher's dynamic QR code</p>
-                    <div id="reader" class="max-w-xs mx-auto overflow-hidden rounded-lg"></div>
-                    <button onclick="startScanner()" class="mt-4 bg-blue-900 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-800 transition">
-                        Open Camera
+                <div class="mt-6 flex items-center justify-between text-xs pt-4 border-t border-slate-200">
+                    <button onclick="openForgotPasswordModal()" class="text-blue-600 hover:underline font-medium">
+                        <i class="fa-solid fa-key text-[10px]"></i> Forgot Password?
+                    </button>
+                    <button onclick="switchPortal('student-register')" class="text-emerald-600 hover:underline font-bold">
+                        <i class="fa-solid fa-user-plus text-[10px]"></i> Create New Account
                     </button>
                 </div>
-
-                <!-- TIMETABLE IMPORT SECTION -->
-                <div>
-                    <h3 class="text-lg font-bold text-slate-800 mb-3">Department Schedule / Timetable</h3>
-                    <div class="overflow-x-auto border rounded-lg">
-                        <table class="w-full text-xs text-center border-collapse">
-                            <thead class="bg-blue-900 text-white">
-                                <tr>
-                                    <th class="p-2 border">Time / Day</th>
-                                    <th class="p-2 border">Mon</th>
-                                    <th class="p-2 border">Tue</th>
-                                    <th class="p-2 border">Wed</th>
-                                    <th class="p-2 border">Thu</th>
-                                    <th class="p-2 border">Fri</th>
-                                    <th class="p-2 border">Sat</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y text-slate-700">
-                                <tr>
-                                    <td class="p-2 font-bold bg-slate-100">10:15 - 11:15</td>
-                                    <td class="p-2">PS</td><td class="p-2">PS</td><td class="p-2">PS</td><td class="p-2">DSA</td><td class="p-2">DSA</td><td class="p-2" rowspan="2">Honour - SYDS</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-2 font-bold bg-slate-100">11:15 - 12:15</td>
-                                    <td class="p-2">DSA</td><td class="p-2">MDM</td><td class="p-2">Indian Civ.</td><td class="p-2">DMS</td><td class="p-2">MIS</td>
-                                </tr>
-                                <tr class="bg-amber-50 font-bold text-amber-800"><td colspan="7" class="p-1">RECESS 1 (12:15 - 12:45)</td></tr>
-                                <tr>
-                                    <td class="p-2 font-bold bg-slate-100">12:45 - 01:45</td>
-                                    <td class="p-2">MDM</td><td class="p-2">DMS</td><td class="p-2" rowspan="2">S1: MDM / S2: Comm.</td><td class="p-2" rowspan="2">S1: DSA / S2: DMS</td><td class="p-2" rowspan="2">S1: OE / S2: Comm.</td><td class="p-2">-</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-2 font-bold bg-slate-100">01:45 - 02:45</td>
-                                    <td class="p-2">DMS</td><td class="p-2">MIS</td><td class="p-2">-</td>
-                                </tr>
-                                <tr class="bg-amber-50 font-bold text-amber-800"><td colspan="7" class="p-1">RECESS 2 (02:45 - 03:00)</td></tr>
-                                <tr>
-                                    <td class="p-2 font-bold bg-slate-100">03:00 - 05:00</td>
-                                    <td class="p-2">S1: DMS Lab</td><td class="p-2">S1: DSA Lab</td><td class="p-2">S1: Comm Field</td><td class="p-2">S1: OE Lab</td><td class="p-2">S1: DMS Lab</td><td class="p-2">-</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
         </section>
 
-        <!-- 11. FACULTY DASHBOARD -->
-        <section id="view-faculty-dashboard" class="view-section hidden">
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 space-y-6">
-                <div class="flex justify-between items-center border-b pb-4">
+        <!-- Student Create Account Section -->
+        <section id="student-register-view" class="portal-view hidden max-w-2xl mx-auto my-4">
+            <div class="glass-panel p-8 rounded-2xl shadow-2xl border border-white">
+                <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-200">
                     <div>
-                        <h2 id="fac-dash-name" class="text-2xl font-bold text-amber-700">Faculty Dashboard</h2>
-                        <p id="fac-dash-dept" class="text-xs text-slate-500"></p>
+                        <h2 class="text-2xl font-extrabold text-blue-900"><i class="fa-solid fa-id-card text-blue-600 mr-2"></i>Student Registration</h2>
+                        <p class="text-xs text-slate-500">Fill all details accurately for Admin verification</p>
                     </div>
-                    <button onclick="logout()" class="text-sm bg-red-600 text-white px-3 py-1 rounded">Logout</button>
+                    <button onclick="switchPortal('student-login')" class="text-slate-400 hover:text-slate-700 text-xl"><i class="fa-solid fa-circle-xmark"></i></button>
                 </div>
 
-                <!-- DYNAMIC QR GENERATOR (25 SECONDS TIMER) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 text-center flex flex-col items-center">
-                        <h3 class="text-lg font-bold text-slate-800 mb-2">Generate Attendance QR</h3>
-                        <p class="text-xs text-slate-500 mb-4">QR automatically refreshes every 25 seconds</p>
-                        
-                        <div class="qr-overlay-container border-4 border-amber-600 p-2 rounded-lg bg-white mb-4">
-                            <!-- KCE Logo Watermark in QR Background -->
-                            <img src="https://patiljayesh10k-create.github.io/coem-attendance/logo.png" class="qr-logo-bg" alt="KCE Logo" onerror="this.src='https://via.placeholder.com/50?text=KCE'">
-                            <div id="qrcode"></div>
-                        </div>
-
-                        <div class="text-sm font-bold text-amber-700 mb-2">
-                            Refreshes in: <span id="timer" class="text-lg font-black text-red-600">25</span>s
-                        </div>
-                        <button onclick="generateDynamicQR()" class="bg-amber-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-amber-700 transition">Force Regenerate QR</button>
-                    </div>
-
-                    <!-- REAL-TIME CLASSROOM LIVE ATTENDANCE LIST -->
-                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-bold text-slate-800">Live Classroom Attendance</h3>
-                            <span id="live-count" class="bg-blue-900 text-white text-xs px-2 py-1 rounded-full font-bold">0 Present</span>
-                        </div>
-                        <p class="text-xs text-slate-500 mb-3">Students scanning in real-time will appear below:</p>
-                        <ul id="live-attendance-list" class="divide-y divide-slate-200 text-sm max-h-60 overflow-y-auto">
-                            <li class="py-2 text-slate-400 text-center italic">No students marked present yet.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 12. PRINCIPAL DASHBOARD -->
-        <section id="view-principal-dashboard" class="view-section hidden">
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 space-y-6">
-                <div class="flex justify-between items-center border-b pb-4">
-                    <h2 class="text-2xl font-bold text-amber-700">Principal Analytical Dashboard</h2>
-                    <button onclick="logout()" class="text-sm bg-red-600 text-white px-3 py-1 rounded">Logout</button>
-                </div>
-
-                <!-- PENDING HOD / FACULTY APPROVALS -->
-                <div class="bg-amber-50 p-4 rounded-xl border border-amber-200">
-                    <h3 class="text-md font-bold text-amber-900 mb-2">Pending Faculty/HOD Approvals</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-xs text-left bg-white border">
-                            <thead class="bg-amber-200 text-amber-900 uppercase">
-                                <tr>
-                                    <th class="p-2 border">EMP ID</th>
-                                    <th class="p-2 border">Name</th>
-                                    <th class="p-2 border">Role</th>
-                                    <th class="p-2 border">Department</th>
-                                    <th class="p-2 border">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbl-pending-faculty">
-                                <!-- JS injected -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- FILTER OPTIONS -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">Department</label>
-                        <select id="pr-filter-dept" class="w-full border p-2 rounded text-sm outline-none">
-                            <option value="Data Science">Data Science</option>
-                            <option value="Computer Science">Computer Science</option>
-                            <option value="Electrical Engineer">Electrical Engineer</option>
-                            <option value="Mechanical Engineer">Mechanical Engineer</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">Year</label>
-                        <select id="pr-filter-year" class="w-full border p-2 rounded text-sm outline-none">
-                            <option value="1">First Year</option>
-                            <option value="2">Second Year</option>
-                            <option value="3">Third Year</option>
-                            <option value="4">Fourth Year</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">Report Type</label>
-                        <select id="pr-filter-type" class="w-full border p-2 rounded text-sm outline-none">
-                            <option value="weekly">Weekly Report</option>
-                            <option value="monthly">Monthly Report</option>
-                        </select>
-                    </div>
-                    <div class="flex items-end">
-                        <button onclick="renderPrincipalReport()" class="w-full bg-blue-900 text-white p-2 rounded font-bold hover:bg-blue-800">Fetch Analytics</button>
-                    </div>
-                </div>
-
-                <!-- REPORT RESULTS TABLE -->
-                <div>
-                    <h3 class="text-lg font-bold text-slate-800 mb-3">Lecture & Faculty Reports</h3>
-                    <div class="overflow-x-auto border rounded-lg">
-                        <table class="w-full text-sm text-left">
-                            <thead class="bg-slate-100 text-slate-700 uppercase text-xs">
-                                <tr>
-                                    <th class="p-3 border">Faculty / Subject</th>
-                                    <th class="p-3 border">Status</th>
-                                    <th class="p-3 border">Present Count</th>
-                                    <th class="p-3 border">Absent Count</th>
-                                    <th class="p-3 border">Overall %</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbl-principal-reports" class="divide-y">
-                                <tr><td colspan="5" class="p-4 text-center text-slate-400">Select criteria and click Fetch Analytics</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 13. PARENT DASHBOARD -->
-        <section id="view-parent-dashboard" class="view-section hidden">
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200 space-y-6">
-                <div class="flex justify-between items-center border-b pb-4">
-                    <div>
-                        <h2 id="parent-st-name" class="text-2xl font-bold text-emerald-800">Student Attendance Status</h2>
-                        <p id="parent-st-prn" class="text-xs text-slate-500"></p>
-                    </div>
-                    <button onclick="logout()" class="text-sm bg-red-600 text-white px-3 py-1 rounded">Logout</button>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-200 text-center">
-                        <p class="text-xs font-bold text-emerald-800">Overall Attendance</p>
-                        <p id="pr-att-pct" class="text-3xl font-black text-emerald-900">0%</p>
-                    </div>
-                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 text-center">
-                        <p class="text-xs font-bold text-blue-800">Lectures Attended</p>
-                        <p id="pr-att-count" class="text-3xl font-black text-blue-900">0</p>
-                    </div>
-                    <div class="bg-amber-50 p-4 rounded-lg border border-amber-200 text-center">
-                        <p class="text-xs font-bold text-amber-800">Late Marks Recorded</p>
-                        <p id="pr-late-count" class="text-3xl font-black text-amber-900">0</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="bg-white border-t border-slate-200 text-center py-4 text-xs text-slate-500 mt-auto">
-        &copy; 2026 KCE Society's College of Engineering & Management, Jalgaon. All Rights Reserved.
-    </footer>
-
-    <!-- LOGIC & APPLICATION SCRIPT -->
-    <script>
-        // GLOBAL DATA MODELS IN LOCALSTORAGE
-        let appState = {
-            users: JSON.parse(localStorage.getItem('smp_users')) || [],
-            attendance: JSON.parse(localStorage.getItem('smp_attendance')) || [],
-            currentSession: JSON.parse(localStorage.getItem('smp_session')) || null,
-            viewHistory: []
-        };
-
-        let qrTimer = null;
-        let qrCountdown = 25;
-
-        // INITIALIZE APP
-        window.onload = function() {
-            if (appState.currentSession) {
-                restoreSession();
-            } else {
-                switchView('landing', false);
-            }
-        };
-
-        function saveData() {
-            localStorage.setItem('smp_users', JSON.stringify(appState.users));
-            localStorage.setItem('smp_attendance', JSON.stringify(appState.attendance));
-            localStorage.setItem('smp_session', JSON.stringify(appState.currentSession));
-        }
-
-        // VIEW ROUTING WITH STEP-BY-STEP BACK BUTTON
-        function switchView(viewId, recordHistory = true) {
-            const currentActive = document.querySelector('.view-section:not(.hidden)');
-            if (currentActive && recordHistory) {
-                appState.viewHistory.push(currentActive.id.replace('view-', ''));
-            }
-
-            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-            const target = document.getElementById(`view-${viewId}`);
-            if (target) {
-                target.classList.remove('hidden');
-            }
-
-            showAlert('', ''); // Clear alerts
-        }
-
-        function goBack() {
-            if (appState.viewHistory.length > 0) {
-                const prev = appState.viewHistory.pop();
-                switchView(prev, false);
-            } else {
-                switchView('landing', false);
-            }
-        }
-
-        function showAlert(msg, type = 'info') {
-            const box = document.getElementById('alert-box');
-            if (!msg) {
-                box.classList.add('hidden');
-                return;
-            }
-            box.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700', 'bg-amber-100', 'text-amber-700');
-            if (type === 'error') box.classList.add('bg-red-100', 'text-red-700');
-            else if (type === 'success') box.classList.add('bg-green-100', 'text-green-700');
-            else box.classList.add('bg-amber-100', 'text-amber-700');
-            box.innerText = msg;
-        }
-
-        // DYNAMIC FORM OPTION HANDLERS
-        function handleStreamChange() {
-            const stream = document.getElementById('st-stream').value;
-            const degDiv = document.getElementById('degree-type-div');
-            if (stream === 'Engineering') {
-                degDiv.classList.remove('hidden');
-            } else {
-                degDiv.classList.add('hidden');
-            }
-        }
-
-        // 1. STUDENT REGISTRATION LOGIC
-        function handleStudentRegister(e) {
-            e.preventDefault();
-            const prn = document.getElementById('st-prn').value.trim();
-            const existing = appState.users.find(u => u.prn === prn);
-
-            if (existing) {
-                showAlert('PRN already registered!', 'error');
-                return;
-            }
-
-            const newUser = {
-                role: 'Student',
-                name: document.getElementById('st-name').value.trim(),
-                prn: prn,
-                stream: document.getElementById('st-stream').value,
-                degree: document.getElementById('st-stream').value === 'Engineering' ? document.getElementById('st-degree').value : 'Diploma',
-                branch: document.getElementById('st-branch').value,
-                pass: document.getElementById('st-pass').value,
-                status: 'pending' // Admin approval required
-            };
-
-            appState.users.push(newUser);
-            saveData();
-            alert('Wait for your approval from admin');
-            switchView('landing');
-        }
-
-        // 2. STUDENT LOGIN LOGIC
-        function handleStudentLogin(e) {
-            e.preventDefault();
-            const prn = document.getElementById('login-prn').value.trim();
-            const pass = document.getElementById('login-st-pass').value;
-
-            const user = appState.users.find(u => u.role === 'Student' && u.prn === prn && u.pass === pass);
-
-            if (!user) {
-                showAlert('Invalid PRN or Password!', 'error');
-                return;
-            }
-
-            if (user.status === 'pending') {
-                showAlert('Wait for your approval from admin', 'warning');
-                return;
-            }
-
-            appState.currentSession = user;
-            saveData();
-            openStudentDashboard();
-        }
-
-        function openStudentDashboard() {
-            document.getElementById('current-role-display').innerText = `Student: ${appState.currentSession.name}`;
-            document.getElementById('st-dash-name').innerText = appState.currentSession.name;
-            document.getElementById('st-dash-prn').innerText = `PRN: ${appState.currentSession.prn} | ${appState.currentSession.branch}`;
-            switchView('student-dashboard');
-        }
-
-        // 3. FACULTY / HOD REGISTRATION LOGIC
-        function handleFacultyRegister(e) {
-            e.preventDefault();
-            const empId = document.getElementById('fac-empid').value.trim();
-            const existing = appState.users.find(u => u.empId === empId);
-
-            if (existing) {
-                showAlert('Employee ID already registered!', 'error');
-                return;
-            }
-
-            const newUser = {
-                role: document.getElementById('fac-role').value,
-                name: document.getElementById('fac-name').value.trim(),
-                empId: empId,
-                dept: document.getElementById('fac-dept').value,
-                pass: document.getElementById('fac-pass').value,
-                status: 'pending' // Principal approval required
-            };
-
-            appState.users.push(newUser);
-            saveData();
-            alert('Wait for Principal Approval');
-            switchView('landing');
-        }
-
-        // 4. FACULTY LOGIN
-        function handleFacultyLogin(e) {
-            e.preventDefault();
-            const empId = document.getElementById('login-empid').value.trim();
-            const pass = document.getElementById('login-fac-pass').value;
-
-            const user = appState.users.find(u => (u.role === 'Teacher' || u.role === 'HOD') && u.empId === empId && u.pass === pass);
-
-            if (!user) {
-                showAlert('Invalid Employee ID or Password!', 'error');
-                return;
-            }
-
-            if (user.status === 'pending') {
-                showAlert('Wait for Principal Approval', 'warning');
-                return;
-            }
-
-            appState.currentSession = user;
-            saveData();
-            openFacultyDashboard();
-        }
-
-        function openFacultyDashboard() {
-            document.getElementById('current-role-display').innerText = `${appState.currentSession.role}: ${appState.currentSession.name}`;
-            document.getElementById('fac-dash-name').innerText = appState.currentSession.name;
-            document.getElementById('fac-dash-dept').innerText = `Dept: ${appState.currentSession.dept}`;
-            switchView('faculty-dashboard');
-            startDynamicQR();
-            renderLiveAttendance();
-        }
-
-        // 5. PARENT LOGIN
-        function handleParentLogin(e) {
-            e.preventDefault();
-            const prn = document.getElementById('parent-prn').value.trim();
-            const pass = document.getElementById('parent-pass').value;
-
-            const student = appState.users.find(u => u.role === 'Student' && u.prn === prn && u.pass === pass);
-
-            if (!student) {
-                showAlert('Invalid Student PRN or Password!', 'error');
-                return;
-            }
-
-            appState.currentSession = { role: 'Parent', student: student };
-            saveData();
-            openParentDashboard();
-        }
-
-        function openParentDashboard() {
-            const st = appState.currentSession.student;
-            document.getElementById('current-role-display').innerText = `Parent Portal (${st.name})`;
-            document.getElementById('parent-st-name').innerText = st.name;
-            document.getElementById('parent-st-prn').innerText = `PRN: ${st.prn} | ${st.branch}`;
-
-            const records = appState.attendance.filter(a => a.prn === st.prn);
-            document.getElementById('pr-att-count').innerText = records.length;
-            document.getElementById('pr-att-pct').innerText = records.length > 0 ? '100%' : '0%';
-            document.getElementById('pr-late-count').innerText = '0';
-
-            switchView('parent-dashboard');
-        }
-
-        // 6. HARDCODED ADMIN LOGIN
-        function handleAdminLogin(e) {
-            e.preventDefault();
-            const user = document.getElementById('admin-user').value.trim();
-            const pass = document.getElementById('admin-pass').value;
-
-            if (user === 'KCECOEM' && pass === 'Jayesh@21') {
-                appState.currentSession = { role: 'Admin', name: 'System Admin' };
-                saveData();
-                openAdminDashboard();
-            } else {
-                showAlert('Invalid Admin Credentials!', 'error');
-            }
-        }
-
-        function openAdminDashboard() {
-            document.getElementById('current-role-display').innerText = 'System Administrator';
-            renderAdminDashboard();
-            switchView('admin-dashboard');
-        }
-
-        function renderAdminDashboard() {
-            const pendingStudents = appState.users.filter(u => u.role === 'Student' && u.status === 'pending');
-            const activeStudents = appState.users.filter(u => u.role === 'Student' && u.status === 'approved');
-
-            document.getElementById('cnt-pending-st').innerText = pendingStudents.length;
-            document.getElementById('cnt-active-st').innerText = activeStudents.length;
-            document.getElementById('cnt-total-users').innerText = appState.users.length;
-
-            const tbody = document.getElementById('tbl-pending-students');
-            tbody.innerHTML = '';
-
-            if (pendingStudents.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-slate-400">No pending student approvals</td></tr>`;
-                return;
-            }
-
-            pendingStudents.forEach(st => {
-                tbody.innerHTML += `
-                    <tr class="border-b">
-                        <td class="p-3 font-bold">${st.prn}</td>
-                        <td class="p-3">${st.name}</td>
-                        <td class="p-3">${st.branch}</td>
-                        <td class="p-3">${st.stream} (${st.degree})</td>
-                        <td class="p-3">
-                            <button onclick="approveUser('${st.prn}')" class="bg-emerald-600 text-white px-3 py-1 rounded text-xs font-bold hover:bg-emerald-700">Approve</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function approveUser(id) {
-            const u = appState.users.find(x => x.prn === id || x.empId === id);
-            if (u) {
-                u.status = 'approved';
-                saveData();
-                alert(`User Approved! Notification sent to ${u.name}`);
-                if (appState.currentSession.role === 'Admin') renderAdminDashboard();
-                if (appState.currentSession.role === 'Principal') renderPrincipalDashboard();
-            }
-        }
-
-        // 7. HARDCODED PRINCIPAL LOGIN
-        function handlePrincipalLogin(e) {
-            e.preventDefault();
-            const user = document.getElementById('pr-user').value.trim();
-            const pass = document.getElementById('pr-pass').value;
-
-            if (user === 'Principal1' && pass === 'Tushar@123') {
-                appState.currentSession = { role: 'Principal', name: 'Principal Sir' };
-                saveData();
-                openPrincipalDashboard();
-            } else {
-                showAlert('Invalid Principal Credentials!', 'error');
-            }
-        }
-
-        function openPrincipalDashboard() {
-            document.getElementById('current-role-display').innerText = 'Principal Portal';
-            renderPrincipalDashboard();
-            switchView('principal-dashboard');
-        }
-
-        function renderPrincipalDashboard() {
-            const pendingFac = appState.users.filter(u => (u.role === 'Teacher' || u.role === 'HOD') && u.status === 'pending');
-            const tbody = document.getElementById('tbl-pending-faculty');
-            tbody.innerHTML = '';
-
-            if (pendingFac.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-2 text-center text-slate-400">No pending faculty approvals</td></tr>`;
-            } else {
-                pendingFac.forEach(f => {
-                    tbody.innerHTML += `
-                        <tr class="border-b">
-                            <td class="p-2 font-bold">${f.empId}</td>
-                            <td class="p-2">${f.name}</td>
-                            <td class="p-2">${f.role}</td>
-                            <td class="p-2">${f.dept}</td>
-                            <td class="p-2">
-                                <button onclick="approveUser('${f.empId}')" class="bg-emerald-600 text-white px-2 py-1 rounded text-xs font-bold">Approve</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            }
-        }
-
-        function renderPrincipalReport() {
-            const dept = document.getElementById('pr-filter-dept').value;
-            const tbody = document.getElementById('tbl-principal-reports');
-            
-            tbody.innerHTML = `
-                <tr>
-                    <td class="p-3 border font-semibold">Prof. Vinita Patil (DMS)</td>
-                    <td class="p-3 border text-emerald-600 font-bold">Lecture Conducted</td>
-                    <td class="p-3 border">0</td>
-                    <td class="p-3 border">0</td>
-                    <td class="p-3 border font-bold">0%</td>
-                </tr>
-                <tr>
-                    <td class="p-3 border font-semibold">Dr. Nilesh Ingale (DSA)</td>
-                    <td class="p-3 border text-emerald-600 font-bold">Lecture Conducted</td>
-                    <td class="p-3 border">0</td>
-                    <td class="p-3 border">0</td>
-                    <td class="p-3 border font-bold">0%</td>
-                </tr>
-            `;
-        }
-
-        // 8. DYNAMIC QR CODE GENERATOR (25 SECONDS)
-        function startDynamicQR() {
-            generateDynamicQR();
-            if (qrTimer) clearInterval(qrTimer);
-            qrCountdown = 25;
-            qrTimer = setInterval(() => {
-                qrCountdown--;
-                document.getElementById('timer').innerText = qrCountdown;
-                if (qrCountdown <= 0) {
-                    generateDynamicQR();
-                    qrCountdown = 25;
-                }
-            }, 1000);
-        }
-
-        function generateDynamicQR() {
-            const qrContainer = document.getElementById('qrcode');
-            qrContainer.innerHTML = '';
-            const payload = `KCE_ATTENDANCE_${Date.now()}`;
-            new QRCode(qrContainer, {
-                text: payload,
-                width: 160,
-                height: 160,
-                colorDark: "#1e3a8a",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-        }
-
-        // 9. STUDENT CAMERA QR SCANNER
-        function startScanner() {
-            const html5LtCodeScanner = new Html5Qrcode("reader");
-            html5LtCodeScanner.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 200, height: 200 } },
-                (decodedText, decodedResult) => {
-                    html5LtCodeScanner.stop();
-                    markAttendance();
-                },
-                (errorMessage) => {}
-            ).catch(err => {
-                alert('Camera access error or permission denied');
-            });
-        }
-
-        function markAttendance() {
-            const student = appState.currentSession;
-            if (!student || student.role !== 'Student') return;
-
-            const exists = appState.attendance.find(a => a.prn === student.prn);
-            if (!exists) {
-                appState.attendance.push({
-                    prn: student.prn,
-                    name: student.name,
-                    time: new Date().toLocaleTimeString()
-                });
-                saveData();
-            }
-            alert('Attendance Marked Successfully!');
-        }
-
-        function renderLiveAttendance() {
-            const list = document.getElementById('live-attendance-list');
-            const count = document.getElementById('live-count');
-            list.innerHTML = '';
-
-            if (appState.attendance.length === 0) {
-                list.innerHTML = `<li class="py-2 text-slate-400 text-center italic">No students marked present yet.</li>`;
-                count.innerText = `0 Present`;
-                return;
-            }
-
-            count.innerText = `${appState.attendance.length} Present`;
-            appState.attendance.forEach(a => {
-                list.innerHTML += `
-                    <li class="py-2 flex justify-between items-center">
+                <form onsubmit="handleStudentRegistration(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <p class="font-bold text-slate-800">${a.name}</p>
-                            <p class="text-xs text-slate-500">PRN: ${a.prn}</p>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Enter Your PRN No. (Primary Key)*</label>
+                            <input type="text" id="reg-prn" required placeholder="e.g. 20260111" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
                         </div>
-                        <span class="text-xs font-bold bg-emerald-100 text-emerald-800 px-2 py-1 rounded">${a.time}</span>
-                    </li>
-                `;
-            });
-        }
 
-        // RESTORE SESSION ON REFRESH
-        function restoreSession() {
-            const s = appState.currentSession;
-            if (!s) return;
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Full Name*</label>
+                            <input type="text" id="reg-name" required placeholder="First Middle Last Name" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
 
-            if (s.role === 'Student') openStudentDashboard();
-            else if (s.role === 'Teacher' || s.role === 'HOD') openFacultyDashboard();
-            else if (s.role === 'Parent') openParentDashboard();
-            else if (s.role === 'Admin') openAdminDashboard();
-            else if (s.role === 'Principal') openPrincipalDashboard();
-        }
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Set Password*</label>
+                            <input type="password" id="reg-pass" required placeholder="Create strong password" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
 
-        function logout() {
-            appState.currentSession = null;
-            if (qrTimer) clearInterval(qrTimer);
-            saveData();
-            document.getElementById('current-role-display').innerText = 'Guest';
-            switchView('landing', false);
-        }
-    </script>
-</body>
-</html>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Mobile Number*</label>
+                            <input type="tel" id="reg-mobile" required placeholder="10 Digit Mobile No." pattern="[0-9]{10}" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Email Address*</label>
+                            <input type="email" id="reg-email" required placeholder="student@example.com" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+
+                        <!-- Course & Branch Cascade -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Education Category*</label>
+                            <select id="reg-category" onchange="updateCourseOptions()" required class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                <option value="">Select Category</option>
+                                <option value="Diploma">Diploma</option>
+                                <option value="Engineering">Engineering</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Degree / Course*</label>
+                            <select id="reg-course" required class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                <option value="B.Tech">B.Tech</option>
+                                <option value="M.Tech">M.Tech</option>
+                                <option value="B.Voc">B.Voc</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Branch / Specialization*</label>
+                            <select id="reg-branch" required class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                <option value="Data Science">Computer Science & Engineering (Data Science)</option>
+                                <option value="Computer Science">Computer Science & Engineering</option>
+                                <option value="Electrical Engineering">Electrical Engineering</option>
+                                <option value="Mechanical Engineering">Mechanical Engineering</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Enter Your Batch*</label>
+                            <select id="reg-batch" required class="w-full px-3 py-2 text-sm font-bold text-blue-700 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-blue-50">
+                                <option value="S1">Batch S1</option>
+                                <option value="S2">Batch S2</option>
+                                <option value="S3">Batch S3</option>
+                                <option value="S4">Batch S4</option>
+                            </select>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Upload Passport Size Photo*</label>
+                            <input type="file" id="reg-photo" accept="image/*" required onchange="previewPhoto(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                            <div id="photo-preview-box" class="hidden mt-2 flex items-center gap-3">
+                                <img id="photo-preview-img" src="" class="w-16 h-16 object-cover rounded-md border shadow-sm">
+                                <span class="text-xs text-emerald-600 font-semibold"><i class="fa-solid fa-check-circle"></i> Photo Loaded</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex items-center justify-between border-t border-slate-200">
+                        <button type="button" onclick="switchPortal('student-login')" class="px-5 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+                        <button type="submit" class="px-8 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-lg transition">
+                            Submit Application
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Registration Status Pending Modal/Box -->
+        <div id="pending-approval-box" class="hidden max-w-md mx-auto my-8 glass-panel p-8 rounded-2xl text-center border-2 border-amber-300 shadow-2xl">
+            <div class="w-20 h-20 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl animate-pulse">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+            <h3 class="text-xl font-black text-slate-800 mb-2">Registration Pending</h3>
+            <div class="bg-amber-50 border border-amber-200 text-amber-900 p-4 rounded-xl text-sm font-semibold mb-6">
+                Your information is pending for admin approval
+            </div>
+            <p class="text-xs text-slate-600 mb-6">Once Administrator (KCECOEM) approves your application, you will be able to log in with your PRN and Password.</p>
+            <button onclick="switchPortal('student-login')" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl text-sm">
+                Back to Student Login
+            </button>
+        </div>
+
+        <!-- Student Dashboard (After Login) -->
+        <section id="student-dashboard-view" class="portal-view hidden space-y-6">
+            
+            <!-- Top Rectangle Student Profile Banner -->
+            <div class="glass-panel p-6 rounded-2xl border border-blue-100 flex flex-wrap items-center justify-between gap-6 shadow-md">
+                <div class="flex items-center gap-5">
+                    <img id="stud-dash-photo" src="https://via.placeholder.com/150" alt="Student Photo" class="w-24 h-24 object-cover rounded-xl border-2 border-blue-600 shadow-md">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 id="stud-dash-name" class="text-2xl font-black text-slate-800">Student Name</h2>
+                            <span id="stud-dash-batch-badge" class="px-2.5 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full">S1</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-slate-600 mt-2 font-medium">
+                            <p><strong class="text-slate-800">PRN No:</strong> <span id="stud-dash-prn"></span></p>
+                            <p><strong class="text-slate-800">Mobile:</strong> <span id="stud-dash-mobile"></span></p>
+                            <p><strong class="text-slate-800">Email:</strong> <span id="stud-dash-email"></span></p>
+                            <p><strong class="text-slate-800">Branch:</strong> <span id="stud-dash-branch"></span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleCameraScanner()" class="bg-blue-600
