@@ -8,75 +8,86 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- QR Code Generator & Scanner CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap');
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #0f172a;
+            background-color: #0b1329;
             color: #1e293b;
         }
+
+        /* HD High-Class College Background with Clean Translucent Overlay */
         .bg-college {
-            background-image: linear-gradient(rgba(255, 255, 255, 0.92), rgba(241, 245, 249, 0.95)), url('KCE collage image.jpeg');
+            background-image: linear-gradient(rgba(15, 23, 42, 0.78), rgba(15, 23, 42, 0.88)), 
+                              url('KCE%20collage%20image.jpeg'), 
+                              url('KCE collage image.jpeg');
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
             background-attachment: fixed;
         }
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.94);
-            backdrop-filter: blur(14px);
-            border: 1px solid rgba(226, 232, 240, 0.9);
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.07);
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.35);
         }
+
         .qr-watermark-wrapper {
             position: relative;
             display: inline-block;
-            padding: 16px;
+            padding: 14px;
             background: white;
             border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
         }
+
         .qr-watermark-logo {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             background: white;
             border-radius: 50%;
-            padding: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            padding: 3px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
             z-index: 10;
         }
+
         @media print {
             .no-print { display: none !important; }
             .print-only { display: block !important; }
             body { background: white !important; }
-            .glass-panel { box-shadow: none !important; border: 1px solid #ccc !important; }
+            .glass-card { box-shadow: none !important; border: 1px solid #ccc !important; }
         }
     </style>
 </head>
-<body class="bg-college min-h-screen flex flex-col">
+<body class="bg-college min-h-screen flex flex-col justify-between">
 
-    <!-- Top Navigation Bar -->
-    <header class="bg-white/95 backdrop-blur shadow-md sticky top-0 z-50 border-b border-slate-200 no-print">
+    <!-- Top Left Brand & Navigation Header -->
+    <header class="bg-white/95 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-slate-200 no-print">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-wrap items-center justify-between gap-3">
             
-            <!-- College Logo & Title -->
+            <!-- Top Left Logo & Title -->
             <div class="flex items-center space-x-3 cursor-pointer" onclick="switchPortal('student-login')">
-                <img src="WhatsApp Image 2026-08-19 at 10.34.44 AM.jpeg" onerror="this.src='https://via.placeholder.com/60?text=KCE'" alt="KCE Logo" class="h-11 w-11 object-contain rounded-full border border-blue-100 shadow-sm">
+                <img src="WhatsApp Image 2026-08-19 at 10.34.44 AM.jpeg" onerror="this.src='https://via.placeholder.com/60?text=COEM'" alt="KCE Logo" class="h-12 w-12 object-contain rounded-full border-2 border-blue-600 shadow-md">
                 <div>
                     <h1 class="text-xs font-black text-blue-900 tracking-tight leading-tight uppercase">K.C.E. Society's</h1>
-                    <p class="text-xs font-bold text-slate-800">College of Engineering & Management, Jalgaon</p>
-                    <p class="text-[10px] text-blue-600 font-semibold hidden sm:block">Automated Smart Attendance Portal</p>
+                    <p class="text-xs font-extrabold text-slate-800">College of Engineering & Management, Jalgaon</p>
+                    <p class="text-[10px] text-blue-600 font-bold hidden sm:block">Dept. of Computer Science & Engineering (Data Science)</p>
                 </div>
             </div>
 
-            <!-- Portal Navigation Buttons -->
+            <!-- Portal Switcher Navigation -->
             <div class="flex flex-wrap items-center gap-1.5 text-xs font-bold">
                 <button onclick="switchPortal('student-login')" class="portal-nav-btn px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200">
                     <i class="fa-solid fa-user-graduate"></i> Student
@@ -93,9 +104,7 @@
                 <button onclick="switchPortal('parent-login')" class="portal-nav-btn px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200">
                     <i class="fa-solid fa-users-between-lines"></i> Parents
                 </button>
-                
-                <!-- Admin Button -->
-                <button onclick="switchPortal('admin-login')" class="px-3 py-1.5 rounded-full bg-rose-600 text-white hover:bg-rose-700 shadow-sm ml-1 font-extrabold">
+                <button onclick="switchPortal('admin-login')" class="px-3 py-1.5 rounded-full bg-rose-600 text-white hover:bg-rose-700 shadow ml-1 font-extrabold">
                     <i class="fa-solid fa-shield-halved"></i> Admin
                 </button>
 
@@ -111,7 +120,7 @@
         </div>
     </header>
 
-    <!-- Global Floating Alerts -->
+    <!-- Floating Global Alert Notifications -->
     <div id="notification-banner" class="hidden fixed top-16 right-4 z-50 max-w-md">
         <div id="notification-box" class="p-4 rounded-xl flex items-center justify-between shadow-2xl text-xs font-bold border">
             <div class="flex items-center gap-3">
@@ -122,22 +131,18 @@
         </div>
     </div>
 
-    <!-- Main Content Container -->
-    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6">
 
-        <!-- ========================================== -->
-        <!-- 1. STUDENT PORTAL                          -->
-        <!-- ========================================== -->
-        
-        <!-- Student Login Card -->
+        <!-- 1. STUDENT PORTAL -->
         <section id="student-login-view" class="portal-view max-w-md mx-auto my-6">
-            <div class="glass-panel p-8 rounded-2xl shadow-xl border border-white">
+            <div class="glass-card p-8 rounded-2xl shadow-2xl">
                 <div class="text-center mb-6">
                     <div class="w-16 h-16 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl shadow-inner">
                         <i class="fa-solid fa-user-graduate"></i>
                     </div>
                     <h2 class="text-2xl font-black text-slate-800">Student Login</h2>
-                    <p class="text-xs text-slate-500 mt-1">Enter your PRN and Password to access your account</p>
+                    <p class="text-xs text-slate-500 mt-1">Enter your PRN and Password</p>
                 </div>
 
                 <form onsubmit="handleStudentLogin(event)" class="space-y-4">
@@ -149,29 +154,25 @@
                         <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Password*</label>
                         <input type="password" id="stud-login-pass" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white">
                     </div>
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-md transition transform active:scale-95 flex items-center justify-center gap-2 text-sm">
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-md text-sm transition flex items-center justify-center gap-2">
                         <i class="fa-solid fa-right-to-bracket"></i> Login to Dashboard
                     </button>
                 </form>
 
                 <div class="mt-6 flex items-center justify-between text-xs pt-4 border-t border-slate-200">
-                    <button onclick="openForgotPasswordModal('student')" class="text-blue-600 hover:underline font-semibold">
-                        <i class="fa-solid fa-key text-[10px]"></i> Forgot Password?
-                    </button>
-                    <button onclick="switchPortal('student-register')" class="text-emerald-600 hover:underline font-extrabold">
-                        <i class="fa-solid fa-user-plus text-[10px]"></i> Create New Account
-                    </button>
+                    <button onclick="openForgotPasswordModal('student')" class="text-blue-600 hover:underline font-semibold">Forgot Password?</button>
+                    <button onclick="switchPortal('student-register')" class="text-emerald-600 hover:underline font-extrabold">Create New Account</button>
                 </div>
             </div>
         </section>
 
-        <!-- Student Registration Form -->
+        <!-- Student Registration View -->
         <section id="student-register-view" class="portal-view hidden max-w-2xl mx-auto my-4">
-            <div class="glass-panel p-8 rounded-2xl shadow-2xl border border-white">
+            <div class="glass-card p-8 rounded-2xl shadow-2xl">
                 <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-200">
                     <div>
                         <h2 class="text-2xl font-black text-blue-900"><i class="fa-solid fa-id-card text-blue-600 mr-2"></i>Student Registration</h2>
-                        <p class="text-xs text-slate-500">Fill all details accurately for Admin verification</p>
+                        <p class="text-xs text-slate-500">Fill all fields accurately for Admin approval</p>
                     </div>
                     <button onclick="switchPortal('student-login')" class="text-slate-400 hover:text-slate-700 text-xl"><i class="fa-solid fa-circle-xmark"></i></button>
                 </div>
@@ -188,38 +189,36 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Set Password*</label>
-                            <input type="password" id="reg-pass" required placeholder="Create strong password" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                            <input type="password" id="reg-pass" required placeholder="Create password" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Mobile Number*</label>
-                            <input type="tel" id="reg-mobile" required placeholder="10 Digit Mobile" pattern="[0-9]{10}" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                            <input type="tel" id="reg-mobile" required placeholder="10 Digit Mobile No." pattern="[0-9]{10}" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-slate-700 mb-1">Email Address*</label>
                             <input type="email" id="reg-email" required placeholder="student@example.com" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
                         </div>
 
-                        <!-- Cascade: Category -> Degree -> Branch -->
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Category*</label>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Education Category*</label>
                             <select id="reg-category" onchange="updateDegreeOptions()" required class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
-                                <option value="">Select Category</option>
-                                <option value="Diploma">Diploma</option>
                                 <option value="Engineering">Engineering</option>
+                                <option value="Diploma">Diploma</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Degree / Course*</label>
                             <select id="reg-degree" required class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                <option value="B.Voc">B.Voc</option>
                                 <option value="B.Tech">B.Tech</option>
                                 <option value="M.Tech">M.Tech</option>
-                                <option value="B.Voc">B.Voc</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Branch / Specialization*</label>
                             <select id="reg-branch" required class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
-                                <option value="Data Science">Computer Science (Data Science)</option>
+                                <option value="Data Science">Computer Science & Engineering (Data Science)</option>
                                 <option value="Computer Science">Computer Science & Engineering</option>
                                 <option value="Electrical">Electrical Engineering</option>
                                 <option value="Mechanical">Mechanical Engineering</option>
@@ -228,14 +227,14 @@
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Academic Year*</label>
                             <select id="reg-year" required class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
-                                <option value="First Year">First Year</option>
-                                <option value="Second Year">Second Year</option>
-                                <option value="Third Year">Third Year</option>
-                                <option value="Final Year">Final Year</option>
+                                <option value="Second Year">Second Year (S.Y.)</option>
+                                <option value="First Year">First Year (F.Y.)</option>
+                                <option value="Third Year">Third Year (T.Y.)</option>
+                                <option value="Final Year">Final Year (B.Tech)</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Select Batch*</label>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Enter Your Batch*</label>
                             <select id="reg-batch" required class="w-full px-3 py-2 text-sm font-bold text-blue-700 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-blue-50">
                                 <option value="S1">Batch S1</option>
                                 <option value="S2">Batch S2</option>
@@ -248,7 +247,6 @@
                             <input type="text" id="reg-roll" required placeholder="e.g. 01" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
                         </div>
 
-                        <!-- Passport Photo Upload -->
                         <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-slate-700 mb-1">Upload Passport Size Photo*</label>
                             <input type="file" id="reg-photo" accept="image/*" required onchange="previewUploadPhoto(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
@@ -269,13 +267,13 @@
             </div>
         </section>
 
-        <!-- Registration Pending Notification Box -->
-        <div id="pending-approval-box" class="hidden max-w-md mx-auto my-8 glass-panel p-8 rounded-2xl text-center border-2 border-amber-300 shadow-2xl">
+        <!-- Registration Pending Notification View -->
+        <div id="pending-approval-box" class="hidden max-w-md mx-auto my-8 glass-card p-8 rounded-2xl text-center border-2 border-amber-300 shadow-2xl">
             <div class="w-20 h-20 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl animate-pulse">
                 <i class="fa-solid fa-clock-rotate-left"></i>
             </div>
             <h3 class="text-xl font-black text-slate-800 mb-2">Registration Pending</h3>
-            <div class="bg-amber-50 border border-amber-200 text-amber-900 p-4 rounded-xl text-sm font-extrabold mb-6">
+            <div class="bg-amber-50 border border-amber-200 text-amber-900 p-4 rounded-xl text-sm font-black mb-6">
                 Your information is pending for admin approval
             </div>
             <p class="text-xs text-slate-600 mb-6">Once Administrator (KCECOEM) approves your account, you will be able to log in with your PRN and Password.</p>
@@ -284,10 +282,9 @@
             </button>
         </div>
 
-        <!-- Student Dashboard -->
+        <!-- Student Dashboard View -->
         <section id="student-dashboard-view" class="portal-view hidden space-y-6">
-            <!-- Student Header Profile Banner -->
-            <div class="glass-panel p-6 rounded-2xl border border-blue-100 flex flex-wrap items-center justify-between gap-6 shadow-md">
+            <div class="glass-card p-6 rounded-2xl border border-blue-100 flex flex-wrap items-center justify-between gap-6 shadow-md">
                 <div class="flex items-center gap-5">
                     <img id="stud-dash-photo" src="https://via.placeholder.com/150" alt="Student Photo" class="w-20 h-20 object-cover rounded-xl border-2 border-blue-600 shadow-md">
                     <div>
@@ -311,45 +308,87 @@
                 </div>
             </div>
 
-            <!-- In-App Camera QR Scanner Modal / View -->
-            <div id="scanner-modal" class="hidden glass-panel p-6 rounded-2xl max-w-lg mx-auto text-center border border-blue-300">
+            <!-- In-App Camera QR Scanner Modal -->
+            <div id="scanner-modal" class="hidden glass-card p-6 rounded-2xl max-w-lg mx-auto text-center border border-blue-300">
                 <h3 class="text-base font-bold text-slate-800 mb-3"><i class="fa-solid fa-camera mr-2 text-blue-600"></i>Point Camera at Teacher's QR Code</h3>
                 <div id="qr-reader" class="w-full rounded-xl overflow-hidden shadow-inner"></div>
                 <button onclick="toggleCameraScanner()" class="mt-4 px-6 py-2 bg-slate-700 text-white text-xs font-bold rounded-lg">Close Scanner</button>
             </div>
 
-            <!-- Batch Timetable Section -->
-            <div class="glass-panel p-6 rounded-2xl shadow-sm">
+            <!-- Official S.Y. Timetable Section (Room No. 116) -->
+            <div class="glass-card p-6 rounded-2xl shadow-sm">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-base font-black text-slate-800"><i class="fa-solid fa-calendar-days text-blue-600 mr-2"></i>My Batch Timetable (<span id="stud-dash-batch-title">S1</span>)</h3>
-                    <span class="text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-bold">Auto Synchronized</span>
+                    <div>
+                        <h3 class="text-base font-black text-slate-800"><i class="fa-solid fa-calendar-days text-blue-600 mr-2"></i>Class Timetable: S.Y. Data Science (<span id="stud-dash-batch-title">Batch S1</span>)</h3>
+                        <p class="text-xs text-slate-500 font-bold">Classroom No. 116 | A.Y. 2026-2027</p>
+                    </div>
+                    <span class="text-xs bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-bold">Live Synchronized</span>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs">
                         <thead class="bg-slate-100 text-slate-700 uppercase font-black">
                             <tr>
-                                <th class="p-3">Day</th>
-                                <th class="p-3">Time</th>
-                                <th class="p-3">Subject</th>
-                                <th class="p-3">Teacher EMP ID</th>
-                                <th class="p-3">Room</th>
+                                <th class="p-3">Time / Day</th>
+                                <th class="p-3">Mon</th>
+                                <th class="p-3">Tue</th>
+                                <th class="p-3">Wed</th>
+                                <th class="p-3">Thu</th>
+                                <th class="p-3">Fri</th>
+                                <th class="p-3">Sat</th>
                             </tr>
                         </thead>
-                        <tbody id="stud-timetable-body" class="divide-y divide-slate-100 font-medium">
-                            <!-- Dynamic Rows -->
+                        <tbody class="divide-y divide-slate-100 font-semibold">
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-bold text-slate-800">10:15 - 11:15</td>
+                                <td class="p-3 text-blue-900 font-bold">PS</td>
+                                <td class="p-3 text-blue-900 font-bold">PS</td>
+                                <td class="p-3 text-blue-900 font-bold">PS</td>
+                                <td class="p-3 text-emerald-800 font-bold">DSA</td>
+                                <td class="p-3 text-emerald-800 font-bold">DSA</td>
+                                <td class="p-3 text-slate-400">-</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-bold text-slate-800">11:15 - 12:15</td>
+                                <td class="p-3 text-emerald-800 font-bold">DSA</td>
+                                <td class="p-3 text-purple-800 font-bold">MDM</td>
+                                <td class="p-3">Civilization & Heritage</td>
+                                <td class="p-3 text-amber-800 font-bold">DMS</td>
+                                <td class="p-3 text-indigo-800 font-bold">MIS</td>
+                                <td class="p-3 font-semibold text-blue-600">Honour - SYDS</td>
+                            </tr>
+                            <tr class="bg-slate-50 text-slate-500 font-bold text-center">
+                                <td colspan="7" class="p-2">12:15 TO 12:45 — RECESS 1</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-bold text-slate-800">12:45 - 02:45</td>
+                                <td class="p-3">MDM / DMS</td>
+                                <td class="p-3">DMS / MIS</td>
+                                <td class="p-3 font-bold text-blue-700">Lab: MDM / DSA</td>
+                                <td class="p-3 font-bold text-blue-700">Lab: DSA / DMS</td>
+                                <td class="p-3 font-bold text-blue-700">Lab: OE / DSA</td>
+                                <td class="p-3 text-slate-400">-</td>
+                            </tr>
+                            <tr class="bg-slate-50 text-slate-500 font-bold text-center">
+                                <td colspan="7" class="p-2">02:45 TO 03:00 — RECESS 2</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-bold text-slate-800">03:00 - 05:00</td>
+                                <td class="p-3 font-bold text-emerald-700">Practical: S1/S2/S3/S4</td>
+                                <td class="p-3 font-bold text-emerald-700">Practical: S1/S2/S3/S4</td>
+                                <td class="p-3 font-bold text-emerald-700">Practical: S1/S2/S3/S4</td>
+                                <td class="p-3 font-bold text-emerald-700">Practical: S1/S2/S3/S4</td>
+                                <td class="p-3 font-bold text-emerald-700">Practical: S1/S2/S3/S4</td>
+                                <td class="p-3 text-slate-400">-</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <!-- ========================================== -->
-        <!-- 2. TEACHER PORTAL                          -->
-        <!-- ========================================== -->
-        
-        <!-- Teacher Login Card -->
+        <!-- 2. TEACHER PORTAL -->
         <section id="teacher-login-view" class="portal-view hidden max-w-md mx-auto my-6">
-            <div class="glass-panel p-8 rounded-2xl shadow-xl border border-white">
+            <div class="glass-card p-8 rounded-2xl shadow-xl">
                 <div class="text-center mb-6">
                     <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl shadow-inner">
                         <i class="fa-solid fa-chalkboard-user"></i>
@@ -360,8 +399,8 @@
 
                 <form onsubmit="handleTeacherLogin(event)" class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Enter EMP ID*</label>
-                        <input type="text" id="teacher-login-empid" required placeholder="e.g. EMP101" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none text-sm bg-white">
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Teacher EMP ID*</label>
+                        <input type="text" id="teacher-login-empid" required placeholder="e.g. EMP001" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none text-sm bg-white">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Password*</label>
@@ -371,75 +410,22 @@
                         <i class="fa-solid fa-right-to-bracket"></i> Login as Faculty
                     </button>
                 </form>
-
-                <div class="mt-6 flex items-center justify-between text-xs pt-4 border-t border-slate-200">
-                    <button onclick="openForgotPasswordModal('teacher')" class="text-emerald-600 hover:underline font-semibold">Forgot Password?</button>
-                    <button onclick="switchPortal('teacher-register')" class="text-blue-600 hover:underline font-bold">Register New Teacher</button>
-                </div>
             </div>
         </section>
 
-        <!-- Teacher Registration Form -->
-        <section id="teacher-register-view" class="portal-view hidden max-w-xl mx-auto my-4">
-            <div class="glass-panel p-8 rounded-2xl shadow-2xl border border-white">
-                <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-200">
-                    <h2 class="text-xl font-black text-emerald-900"><i class="fa-solid fa-chalkboard-user text-emerald-600 mr-2"></i>Faculty Registration</h2>
-                    <button onclick="switchPortal('teacher-login')" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-circle-xmark text-xl"></i></button>
-                </div>
-                <form onsubmit="handleTeacherRegistration(event)" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Teacher EMP ID (Unique)*</label>
-                            <input type="text" id="t-reg-empid" required placeholder="e.g. EMP001" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Full Name*</label>
-                            <input type="text" id="t-reg-name" required placeholder="Prof. Name" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Department*</label>
-                            <select id="t-reg-dept" required class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
-                                <option value="Data Science">Computer Science (Data Science)</option>
-                                <option value="Computer Science">Computer Science & Engineering</option>
-                                <option value="Electrical">Electrical Engineering</option>
-                                <option value="Mechanical">Mechanical Engineering</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Subject Specialization*</label>
-                            <input type="text" id="t-reg-subject" required placeholder="e.g. Python Programming" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Mobile No*</label>
-                            <input type="tel" id="t-reg-mobile" required pattern="[0-9]{10}" placeholder="10 Digit Mobile" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Set Password*</label>
-                            <input type="password" id="t-reg-pass" required placeholder="••••••••" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none">
-                        </div>
-                    </div>
-                    <div class="pt-4 flex items-center justify-between border-t">
-                        <button type="button" onclick="switchPortal('teacher-login')" class="text-xs font-bold text-slate-500">Cancel</button>
-                        <button type="submit" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow">Submit for Approval</button>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        <!-- Teacher Dashboard (Live Lecture & Dynamic QR Attendance) -->
+        <!-- Teacher Live Dynamic QR Dashboard -->
         <section id="teacher-dashboard-view" class="portal-view hidden space-y-6">
-            <!-- Faculty Profile Bar -->
-            <div class="glass-panel p-6 rounded-2xl border border-emerald-100 flex flex-wrap items-center justify-between gap-4 shadow-md">
+            <div class="glass-card p-6 rounded-2xl border border-emerald-100 flex flex-wrap items-center justify-between gap-4 shadow-md">
                 <div class="flex items-center gap-4">
-                    <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center text-2xl font-black">
+                    <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center text-2xl font-black">
                         <i class="fa-solid fa-chalkboard-user"></i>
                     </div>
                     <div>
-                        <h2 id="teacher-dash-name" class="text-xl font-black text-slate-800">Prof. Faculty Name</h2>
+                        <h2 id="teacher-dash-name" class="text-xl font-black text-slate-800">Mrs. Pooja Marathe</h2>
                         <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600 mt-1 font-semibold">
-                            <p><strong>EMP ID:</strong> <span id="teacher-dash-empid"></span></p>
-                            <p><strong>Dept:</strong> <span id="teacher-dash-dept"></span></p>
-                            <p><strong>Subject:</strong> <span id="teacher-dash-subject"></span></p>
+                            <p><strong>EMP ID:</strong> <span id="teacher-dash-empid">EMP001</span></p>
+                            <p><strong>Dept:</strong> <span>CSE (Data Science)</span></p>
+                            <p><strong>Subject:</strong> <span>Probability & Statistics (PS)</span></p>
                         </div>
                     </div>
                 </div>
@@ -449,29 +435,23 @@
                 </div>
             </div>
 
-            <!-- Start Lecture & Generate QR Controls -->
+            <!-- QR & Realtime Present List (No Refresh) -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- QR Generator Box -->
-                <div class="glass-panel p-6 rounded-2xl shadow-sm text-center flex flex-col items-center justify-center">
+                <!-- QR Code Box -->
+                <div class="glass-card p-6 rounded-2xl shadow-sm text-center flex flex-col items-center justify-center">
                     <h3 class="text-sm font-black text-slate-800 uppercase tracking-wider mb-3">Live Lecture QR Code</h3>
-                    
-                    <!-- QR Container with Center KCE Logo -->
                     <div class="qr-watermark-wrapper mb-3">
                         <div id="teacher-qr-box"></div>
                         <img src="WhatsApp Image 2026-08-19 at 10.34.44 AM.jpeg" onerror="this.src='https://via.placeholder.com/40'" class="qr-watermark-logo" alt="Logo">
                     </div>
-
-                    <p class="text-[11px] font-bold text-slate-500 mb-4">Valid only for enrolled batch students</p>
-                    
-                    <div class="w-full flex gap-2">
-                        <button onclick="startNewLectureSession()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition">
-                            <i class="fa-solid fa-rotate mr-1"></i> Refresh QR
-                        </button>
-                    </div>
+                    <p class="text-[11px] font-bold text-slate-500 mb-4">Target: S.Y. Data Science (Batch S1)</p>
+                    <button onclick="startNewLectureSession()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition">
+                        <i class="fa-solid fa-rotate mr-1"></i> Regenerate Dynamic QR
+                    </button>
                 </div>
 
-                <!-- Lecture Setup & Live Realtime Attendance Counter -->
-                <div class="lg:col-span-2 glass-panel p-6 rounded-2xl shadow-sm flex flex-col justify-between">
+                <!-- Live Attendance Real-Time Output -->
+                <div class="lg:col-span-2 glass-card p-6 rounded-2xl shadow-sm flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between border-b pb-3 mb-4">
                             <h3 class="text-base font-black text-slate-800"><i class="fa-solid fa-users text-emerald-600 mr-2"></i>Classroom Live Attendance</h3>
@@ -480,22 +460,6 @@
                             </span>
                         </div>
 
-                        <div class="grid grid-cols-3 gap-3 mb-4 text-xs">
-                            <div class="bg-slate-50 p-2.5 rounded-lg border">
-                                <span class="text-slate-500 block">Target Year</span>
-                                <span id="teacher-live-year" class="font-bold text-slate-800">First Year</span>
-                            </div>
-                            <div class="bg-slate-50 p-2.5 rounded-lg border">
-                                <span class="text-slate-500 block">Target Batch</span>
-                                <span id="teacher-live-batch" class="font-black text-emerald-700">Batch S1</span>
-                            </div>
-                            <div class="bg-slate-50 p-2.5 rounded-lg border">
-                                <span class="text-slate-500 block">Status</span>
-                                <span class="font-bold text-emerald-600 flex items-center gap-1"><i class="fa-solid fa-circle text-[8px] animate-ping"></i> Live Active</span>
-                            </div>
-                        </div>
-
-                        <!-- Realtime Student Attendance Table (Updates without page refresh) -->
                         <div class="overflow-y-auto max-h-64 border rounded-xl">
                             <table class="w-full text-left text-xs">
                                 <thead class="bg-slate-100 text-slate-700 uppercase font-black sticky top-0">
@@ -503,13 +467,14 @@
                                         <th class="p-2.5">PRN</th>
                                         <th class="p-2.5">Name</th>
                                         <th class="p-2.5">Batch</th>
+                                        <th class="p-2.5">Mobile No</th>
                                         <th class="p-2.5">Time</th>
                                         <th class="p-2.5">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="teacher-attendance-live-body" class="divide-y font-semibold">
                                     <tr>
-                                        <td colspan="5" class="p-6 text-center text-slate-400 font-medium">Waiting for students to scan QR code...</td>
+                                        <td colspan="6" class="p-6 text-center text-slate-400 font-medium">Waiting for students to scan QR code...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -519,13 +484,9 @@
             </div>
         </section>
 
-        <!-- ========================================== -->
-        <!-- 3. HOD PORTAL                              -->
-        <!-- ========================================== -->
-        
-        <!-- HOD Login Card -->
+        <!-- 3. HOD PORTAL -->
         <section id="hod-login-view" class="portal-view hidden max-w-md mx-auto my-6">
-            <div class="glass-panel p-8 rounded-2xl shadow-xl border border-white">
+            <div class="glass-card p-8 rounded-2xl shadow-xl">
                 <div class="text-center mb-6">
                     <div class="w-16 h-16 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl shadow-inner">
                         <i class="fa-solid fa-user-tie"></i>
@@ -537,7 +498,7 @@
                 <form onsubmit="handleHODLogin(event)" class="space-y-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase mb-1">HOD ID*</label>
-                        <input type="text" id="hod-login-id" required placeholder="e.g. HOD_DS" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none text-sm bg-white">
+                        <input type="text" id="hod-login-id" required placeholder="HOD_DS" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none text-sm bg-white">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Password*</label>
@@ -547,93 +508,69 @@
                         Login as HOD
                     </button>
                 </form>
-
-                <div class="mt-6 flex items-center justify-between text-xs pt-4 border-t border-slate-200">
-                    <button onclick="openForgotPasswordModal('hod')" class="text-amber-700 hover:underline font-semibold">Forgot Password?</button>
-                    <button onclick="switchPortal('hod-register')" class="text-blue-600 hover:underline font-bold">Create HOD Account</button>
-                </div>
             </div>
         </section>
 
-        <!-- HOD Register Card -->
-        <section id="hod-register-view" class="portal-view hidden max-w-xl mx-auto my-4">
-            <div class="glass-panel p-8 rounded-2xl shadow-2xl border border-white">
-                <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-200">
-                    <h2 class="text-xl font-black text-amber-900"><i class="fa-solid fa-user-tie text-amber-600 mr-2"></i>HOD Registration</h2>
-                    <button onclick="switchPortal('hod-login')" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-circle-xmark text-xl"></i></button>
-                </div>
-                <form onsubmit="handleHODRegistration(event)" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">HOD ID (Unique)*</label>
-                            <input type="text" id="h-reg-id" required placeholder="e.g. HOD_CSE" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Full Name*</label>
-                            <input type="text" id="h-reg-name" required placeholder="Dr. / Prof. Name" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Department*</label>
-                            <select id="h-reg-dept" required class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none bg-white">
-                                <option value="Data Science">Computer Science (Data Science)</option>
-                                <option value="Computer Science">Computer Science & Engineering</option>
-                                <option value="Electrical">Electrical Engineering</option>
-                                <option value="Mechanical">Mechanical Engineering</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Mobile No*</label>
-                            <input type="tel" id="h-reg-mobile" required pattern="[0-9]{10}" placeholder="10 Digit Mobile" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Set Password*</label>
-                            <input type="password" id="h-reg-pass" required placeholder="••••••••" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none">
-                        </div>
-                    </div>
-                    <div class="pt-4 flex items-center justify-between border-t">
-                        <button type="button" onclick="switchPortal('hod-login')" class="text-xs font-bold text-slate-500">Cancel</button>
-                        <button type="submit" class="px-6 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow">Submit for Approval</button>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        <!-- HOD Dashboard -->
+        <!-- HOD Dashboard View -->
         <section id="hod-dashboard-view" class="portal-view hidden space-y-6">
-            <div class="glass-panel p-6 rounded-2xl border border-amber-100 flex items-center justify-between shadow-sm">
+            <div class="glass-card p-6 rounded-2xl border border-amber-100 flex items-center justify-between shadow-sm">
                 <div>
-                    <h2 class="text-xl font-black text-slate-800">Department Dashboard: <span id="hod-dash-dept"></span></h2>
-                    <p class="text-xs text-slate-500 font-semibold">Head of Department: <span id="hod-dash-name"></span> (<span id="hod-dash-id"></span>)</p>
+                    <h2 class="text-xl font-black text-slate-800">Department Dashboard: CSE (Data Science)</h2>
+                    <p class="text-xs text-slate-500 font-bold">Head of Department: Mr. Pravin Bhangale</p>
                 </div>
             </div>
-            <div class="glass-panel p-6 rounded-2xl shadow-sm">
-                <h3 class="text-base font-black text-slate-800 mb-4">Department Faculty & Subject Status</h3>
+            <div class="glass-card p-6 rounded-2xl shadow-sm">
+                <h3 class="text-base font-black text-slate-800 mb-4">Official Subject & Faculty Mapping (S.Y. Data Science)</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs">
                         <thead class="bg-slate-100 text-slate-700 uppercase font-black">
                             <tr>
-                                <th class="p-3">EMP ID</th>
-                                <th class="p-3">Faculty Name</th>
                                 <th class="p-3">Subject</th>
-                                <th class="p-3">Today's Lecture</th>
-                                <th class="p-3">Attendance Taken</th>
+                                <th class="p-3">Faculty Name</th>
+                                <th class="p-3">Theory Hours</th>
+                                <th class="p-3">Practical Batch</th>
                             </tr>
                         </thead>
-                        <tbody id="hod-faculty-table" class="divide-y font-medium">
-                            <!-- Populated dynamically -->
+                        <tbody class="divide-y font-semibold">
+                            <tr>
+                                <td class="p-3 font-bold text-blue-900">Probability & Statistics (PS)</td>
+                                <td class="p-3">Mrs. Pooja Marathe</td>
+                                <td class="p-3">3</td>
+                                <td class="p-3">-</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold text-blue-900">MDM</td>
+                                <td class="p-3">Mr. Rohan Pardeshi</td>
+                                <td class="p-3">3</td>
+                                <td class="p-3">2*4 (LAB-106)</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold text-blue-900">Data Structure & Algorithm (Th)</td>
+                                <td class="p-3">Dr. Nilesh Ingale</td>
+                                <td class="p-3">3</td>
+                                <td class="p-3">-</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold text-blue-900">Data Structure & Algorithm (Lab)</td>
+                                <td class="p-3">Ms. Tanuja Jangale</td>
+                                <td class="p-3">-</td>
+                                <td class="p-3">4*4 (LAB-114)</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold text-blue-900">Database Management System</td>
+                                <td class="p-3">Mrs. Vinita Patil</td>
+                                <td class="p-3">3</td>
+                                <td class="p-3">4*4 (LAB-114)</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <!-- ========================================== -->
-        <!-- 4. PRINCIPAL PORTAL                        -->
-        <!-- ========================================== -->
-        
-        <!-- Principal Login Card -->
+        <!-- 4. PRINCIPAL PORTAL -->
         <section id="principal-login-view" class="portal-view hidden max-w-md mx-auto my-6">
-            <div class="glass-panel p-8 rounded-2xl shadow-xl border border-white">
+            <div class="glass-card p-8 rounded-2xl shadow-xl">
                 <div class="text-center mb-6">
                     <div class="w-16 h-16 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl shadow-inner">
                         <i class="fa-solid fa-building-columns"></i>
@@ -649,7 +586,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Password*</label>
-                        <input type="password" id="principal-password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none text-sm bg-white">
+                        <input type="password" id="principal-password" required placeholder="12345" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none text-sm bg-white">
                     </div>
                     <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl shadow-md text-sm transition">
                         Login as Principal
@@ -658,107 +595,43 @@
             </div>
         </section>
 
-        <!-- Principal Comprehensive Analytics Dashboard -->
+        <!-- Principal Dashboard View -->
         <section id="principal-dashboard-view" class="portal-view hidden space-y-6">
-            <div class="glass-panel p-6 rounded-2xl border border-purple-100 flex flex-wrap items-center justify-between gap-4 shadow-sm">
+            <div class="glass-card p-6 rounded-2xl border border-purple-100 flex flex-wrap items-center justify-between gap-4 shadow-sm">
                 <div>
-                    <h2 class="text-2xl font-black text-purple-950">Campus-Wide Academic Reports</h2>
-                    <p class="text-xs text-slate-500 font-semibold">Real-time attendance percentages and faculty lecture records</p>
+                    <h2 class="text-2xl font-black text-purple-950">Campus-Wide Attendance Analytics</h2>
+                    <p class="text-xs text-slate-500 font-bold">Real-time attendance percentages across departments</p>
                 </div>
                 <button onclick="window.print()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow flex items-center gap-2">
                     <i class="fa-solid fa-file-excel"></i> Export Report / Print
                 </button>
             </div>
 
-            <!-- Filter Controls -->
-            <div class="glass-panel p-6 rounded-2xl shadow-sm grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs font-bold">
-                <div>
-                    <label class="block text-slate-600 mb-1">Date Range</label>
-                    <select id="p-filter-range" onchange="renderPrincipalStats()" class="w-full p-2.5 border rounded-lg bg-white">
-                        <option value="today">Today</option>
-                        <option value="yesterday">Yesterday</option>
-                        <option value="weekly">This Week</option>
-                        <option value="monthly">This Month</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-slate-600 mb-1">Department</label>
-                    <select id="p-filter-dept" onchange="renderPrincipalStats()" class="w-full p-2.5 border rounded-lg bg-white">
-                        <option value="All">All Departments</option>
-                        <option value="Data Science">Data Science</option>
-                        <option value="Computer Science">Computer Science</option>
-                        <option value="Electrical">Electrical</option>
-                        <option value="Mechanical">Mechanical</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-slate-600 mb-1">Year</label>
-                    <select id="p-filter-year" onchange="renderPrincipalStats()" class="w-full p-2.5 border rounded-lg bg-white">
-                        <option value="All">All Years</option>
-                        <option value="First Year">First Year</option>
-                        <option value="Second Year">Second Year</option>
-                        <option value="Third Year">Third Year</option>
-                        <option value="Final Year">Final Year</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-slate-600 mb-1">Select Specific Date</label>
-                    <input type="date" id="p-filter-date" onchange="renderPrincipalStats()" class="w-full p-2 border rounded-lg bg-white">
-                </div>
-            </div>
-
-            <!-- Overall Percentage Metric Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="glass-panel p-5 rounded-2xl border-l-4 border-emerald-500">
-                    <p class="text-xs text-slate-500 font-bold">Average Campus Attendance</p>
-                    <h3 id="p-stat-avg" class="text-3xl font-black text-slate-800 mt-1">88.5%</h3>
+                <div class="glass-card p-5 rounded-2xl border-l-4 border-emerald-500">
+                    <p class="text-xs text-slate-500 font-bold">Campus Average Attendance</p>
+                    <h3 class="text-3xl font-black text-slate-800 mt-1">92.4%</h3>
                 </div>
-                <div class="glass-panel p-5 rounded-2xl border-l-4 border-blue-500">
+                <div class="glass-card p-5 rounded-2xl border-l-4 border-blue-500">
                     <p class="text-xs text-slate-500 font-bold">Total Lectures Conducted</p>
-                    <h3 id="p-stat-lectures" class="text-3xl font-black text-slate-800 mt-1">24</h3>
+                    <h3 class="text-3xl font-black text-slate-800 mt-1">24</h3>
                 </div>
-                <div class="glass-panel p-5 rounded-2xl border-l-4 border-rose-500">
+                <div class="glass-card p-5 rounded-2xl border-l-4 border-rose-500">
                     <p class="text-xs text-slate-500 font-bold">Critical Absentees (&lt; 75%)</p>
-                    <h3 id="p-stat-defaulters" class="text-3xl font-black text-rose-600 mt-1">12</h3>
-                </div>
-            </div>
-
-            <!-- Report Table -->
-            <div class="glass-panel p-6 rounded-2xl shadow-sm">
-                <h3 class="text-sm font-black text-slate-800 uppercase tracking-wider mb-4">Department-wise Breakdown</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-100 text-slate-700 uppercase font-black">
-                            <tr>
-                                <th class="p-3">Department</th>
-                                <th class="p-3">Branch / Degree</th>
-                                <th class="p-3">Conducted Lectures</th>
-                                <th class="p-3">Present %</th>
-                                <th class="p-3">Absent %</th>
-                                <th class="p-3">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="principal-report-body" class="divide-y font-semibold">
-                            <!-- Rendered Dynamically -->
-                        </tbody>
-                    </table>
+                    <h3 class="text-3xl font-black text-rose-600 mt-1">6</h3>
                 </div>
             </div>
         </section>
 
-        <!-- ========================================== -->
-        <!-- 5. PARENTS PORTAL                          -->
-        <!-- ========================================== -->
-        
-        <!-- Parent Login Card -->
+        <!-- 5. PARENTS PORTAL -->
         <section id="parent-login-view" class="portal-view hidden max-w-md mx-auto my-6">
-            <div class="glass-panel p-8 rounded-2xl shadow-xl border border-white">
+            <div class="glass-card p-8 rounded-2xl shadow-xl">
                 <div class="text-center mb-6">
                     <div class="w-16 h-16 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl shadow-inner">
                         <i class="fa-solid fa-users-between-lines"></i>
                     </div>
                     <h2 class="text-2xl font-black text-slate-800">Parents Portal</h2>
-                    <p class="text-xs text-slate-500 mt-1">Track your ward's daily attendance & performance</p>
+                    <p class="text-xs text-slate-500 mt-1">Track your ward's attendance record</p>
                 </div>
 
                 <form onsubmit="handleParentLogin(event)" class="space-y-4">
@@ -777,10 +650,9 @@
             </div>
         </section>
 
-        <!-- Parent Ward Dashboard -->
+        <!-- Parent Ward Dashboard View -->
         <section id="parent-dashboard-view" class="portal-view hidden space-y-6">
-            <!-- Ward Details Header -->
-            <div class="glass-panel p-6 rounded-2xl border border-indigo-100 flex flex-wrap items-center justify-between gap-6 shadow-md">
+            <div class="glass-card p-6 rounded-2xl border border-indigo-100 flex flex-wrap items-center justify-between gap-6 shadow-md">
                 <div class="flex items-center gap-5">
                     <img id="parent-ward-photo" src="https://via.placeholder.com/150" alt="Student Photo" class="w-20 h-20 object-cover rounded-xl border-2 border-indigo-600 shadow-md">
                     <div>
@@ -797,57 +669,17 @@
                     <i class="fa-solid fa-file-pdf"></i> Download PDF Report
                 </button>
             </div>
-
-            <!-- Date / Period Filter -->
-            <div class="glass-panel p-4 rounded-xl flex flex-wrap items-center justify-between gap-4 text-xs font-bold">
-                <div class="flex items-center gap-2">
-                    <span class="text-slate-600">Filter By:</span>
-                    <button onclick="filterParentAttendance('today')" class="px-3 py-1.5 bg-slate-100 hover:bg-indigo-100 rounded-lg">Today</button>
-                    <button onclick="filterParentAttendance('yesterday')" class="px-3 py-1.5 bg-slate-100 hover:bg-indigo-100 rounded-lg">Yesterday</button>
-                    <button onclick="filterParentAttendance('weekly')" class="px-3 py-1.5 bg-slate-100 hover:bg-indigo-100 rounded-lg">This Week</button>
-                    <button onclick="filterParentAttendance('monthly')" class="px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg border border-indigo-200">This Month</button>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span>Select Date:</span>
-                    <input type="date" id="parent-calendar" onchange="filterParentAttendance('custom')" class="p-1.5 border rounded-lg text-xs bg-white">
-                </div>
-            </div>
-
-            <!-- Ward Attendance History Table -->
-            <div class="glass-panel p-6 rounded-2xl shadow-sm">
-                <h3 class="text-sm font-black text-slate-800 uppercase tracking-wider mb-4">Lecture Attendance Log</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-100 text-slate-700 uppercase font-black">
-                            <tr>
-                                <th class="p-3">Date</th>
-                                <th class="p-3">Subject</th>
-                                <th class="p-3">Teacher</th>
-                                <th class="p-3">Status</th>
-                                <th class="p-3">Remarks / Late Mark</th>
-                            </tr>
-                        </thead>
-                        <tbody id="parent-attendance-body" class="divide-y font-semibold">
-                            <!-- Dynamically generated -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </section>
 
-        <!-- ========================================== -->
-        <!-- 6. ADMIN PORTAL                            -->
-        <!-- ========================================== -->
-        
-        <!-- Admin Login Card -->
+        <!-- 6. ADMIN MASTER PORTAL -->
         <section id="admin-login-view" class="portal-view hidden max-w-md mx-auto my-6">
-            <div class="glass-panel p-8 rounded-2xl shadow-2xl border-2 border-rose-200">
+            <div class="glass-card p-8 rounded-2xl shadow-2xl border-2 border-rose-200">
                 <div class="text-center mb-6">
                     <div class="w-16 h-16 bg-rose-100 text-rose-700 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl shadow-inner">
                         <i class="fa-solid fa-shield-halved"></i>
                     </div>
                     <h2 class="text-2xl font-black text-slate-800">Administrator Login</h2>
-                    <p class="text-xs text-rose-600 font-bold mt-1">Strictly Master Admin Credentials</p>
+                    <p class="text-xs text-rose-600 font-bold mt-1">Master Credentials Access</p>
                 </div>
 
                 <form onsubmit="handleAdminLogin(event)" class="space-y-4">
@@ -857,7 +689,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Admin Password*</label>
-                        <input type="password" id="admin-password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-rose-500 outline-none text-sm bg-white">
+                        <input type="password" id="admin-password" required placeholder="54321" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-rose-500 outline-none text-sm bg-white">
                     </div>
                     <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl shadow-md text-sm transition">
                         Login as Admin
@@ -866,30 +698,26 @@
             </div>
         </section>
 
-        <!-- Admin Master Control Panel -->
+        <!-- Admin Master Control Panel View (With Live Sync & Edit/Delete) -->
         <section id="admin-dashboard-view" class="portal-view hidden space-y-6">
-            <div class="glass-panel p-6 rounded-2xl border border-rose-100 flex flex-wrap items-center justify-between gap-4 shadow-sm">
+            <div class="glass-card p-6 rounded-2xl border border-rose-100 flex flex-wrap items-center justify-between gap-4 shadow-sm">
                 <div>
                     <h2 class="text-2xl font-black text-rose-950">Master Control Center</h2>
-                    <p class="text-xs text-slate-500 font-semibold">Approve users, manage timetables & edit college master database</p>
+                    <p class="text-xs text-slate-500 font-bold">Live realtime student registrations & verification management</p>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="approveAllPending()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow flex items-center gap-2">
-                        <i class="fa-solid fa-check-double"></i> Approve All Applications
-                    </button>
-                </div>
+                <button onclick="approveAllPending()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow flex items-center gap-2">
+                    <i class="fa-solid fa-check-double"></i> Approve All Applications
+                </button>
             </div>
 
-            <!-- Admin Category Tabs: Students | Teachers | HOD | Timetable -->
+            <!-- Admin Category Tabs -->
             <div class="flex flex-wrap border-b border-slate-200 gap-2">
                 <button onclick="switchAdminTab('students')" id="admin-tab-btn-students" class="admin-tab-btn px-5 py-2.5 font-bold text-xs border-b-2 border-rose-600 text-rose-600">Students (<span id="admin-badge-students">0</span>)</button>
                 <button onclick="switchAdminTab('teachers')" id="admin-tab-btn-teachers" class="admin-tab-btn px-5 py-2.5 font-bold text-xs text-slate-500 hover:text-slate-800">Teachers (<span id="admin-badge-teachers">0</span>)</button>
-                <button onclick="switchAdminTab('hod')" id="admin-tab-btn-hod" class="admin-tab-btn px-5 py-2.5 font-bold text-xs text-slate-500 hover:text-slate-800">HODs (<span id="admin-badge-hod">0</span>)</button>
-                <button onclick="switchAdminTab('timetable')" id="admin-tab-btn-timetable" class="admin-tab-btn px-5 py-2.5 font-bold text-xs text-slate-500 hover:text-slate-800">Timetable Import</button>
             </div>
 
-            <!-- Admin Sub-View: Students -->
-            <div id="admin-subview-students" class="admin-subview glass-panel p-6 rounded-2xl shadow-sm">
+            <!-- Students Sub-View -->
+            <div id="admin-subview-students" class="admin-subview glass-card p-6 rounded-2xl shadow-sm">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs">
                         <thead class="bg-slate-100 text-slate-700 uppercase font-black">
@@ -901,18 +729,16 @@
                                 <th class="p-3">Mobile & Email</th>
                                 <th class="p-3">Password</th>
                                 <th class="p-3">Status</th>
-                                <th class="p-3 text-center">Actions</th>
+                                <th class="p-3 text-center">Master Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="admin-students-table-body" class="divide-y font-semibold">
-                            <!-- Populated dynamically -->
-                        </tbody>
+                        <tbody id="admin-students-table-body" class="divide-y font-semibold"></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Admin Sub-View: Teachers -->
-            <div id="admin-subview-teachers" class="admin-subview hidden glass-panel p-6 rounded-2xl shadow-sm">
+            <!-- Teachers Sub-View -->
+            <div id="admin-subview-teachers" class="admin-subview hidden glass-card p-6 rounded-2xl shadow-sm">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs">
                         <thead class="bg-slate-100 text-slate-700 uppercase font-black">
@@ -921,97 +747,21 @@
                                 <th class="p-3">Name</th>
                                 <th class="p-3">Dept / Subject</th>
                                 <th class="p-3">Mobile</th>
-                                <th class="p-3">Password</th>
                                 <th class="p-3">Status</th>
                                 <th class="p-3 text-center">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="admin-teachers-table-body" class="divide-y font-semibold">
-                            <!-- Populated dynamically -->
-                        </tbody>
+                        <tbody id="admin-teachers-table-body" class="divide-y font-semibold"></tbody>
                     </table>
                 </div>
-            </div>
-
-            <!-- Admin Sub-View: HOD -->
-            <div id="admin-subview-hod" class="admin-subview hidden glass-panel p-6 rounded-2xl shadow-sm">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-100 text-slate-700 uppercase font-black">
-                            <tr>
-                                <th class="p-3">HOD ID</th>
-                                <th class="p-3">Name</th>
-                                <th class="p-3">Department</th>
-                                <th class="p-3">Mobile</th>
-                                <th class="p-3">Password</th>
-                                <th class="p-3">Status</th>
-                                <th class="p-3 text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-hod-table-body" class="divide-y font-semibold">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Admin Sub-View: Timetable Management -->
-            <div id="admin-subview-timetable" class="admin-subview hidden glass-panel p-6 rounded-2xl shadow-sm space-y-6">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-black text-slate-800 uppercase">Add / Import Department Timetable</h3>
-                </div>
-                <form onsubmit="handleAddTimetableEntry(event)" class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Department</label>
-                        <select id="tt-dept" class="w-full p-2 border rounded-lg bg-white">
-                            <option value="Data Science">Data Science</option>
-                            <option value="Computer Science">Computer Science</option>
-                            <option value="Electrical">Electrical</option>
-                            <option value="Mechanical">Mechanical</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Batch</label>
-                        <select id="tt-batch" class="w-full p-2 border rounded-lg bg-white font-bold text-blue-700">
-                            <option value="S1">S1</option>
-                            <option value="S2">S2</option>
-                            <option value="S3">S3</option>
-                            <option value="S4">S4</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Day</label>
-                        <select id="tt-day" class="w-full p-2 border rounded-lg bg-white">
-                            <option value="Monday">Monday</option>
-                            <option value="Tuesday">Tuesday</option>
-                            <option value="Wednesday">Wednesday</option>
-                            <option value="Thursday">Thursday</option>
-                            <option value="Friday">Friday</option>
-                            <option value="Saturday">Saturday</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Timing</label>
-                        <input type="text" id="tt-time" required placeholder="09:00 - 10:00 AM" class="w-full p-2 border rounded-lg bg-white">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Subject</label>
-                        <input type="text" id="tt-subject" required placeholder="Python Lab" class="w-full p-2 border rounded-lg bg-white">
-                    </div>
-                    <div class="flex items-end">
-                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-2 rounded-lg text-xs">
-                            + Add Entry
-                        </button>
-                    </div>
-                </form>
             </div>
         </section>
 
     </main>
 
-    <!-- Forgot Password Modal with OTP Flow -->
+    <!-- Forgot Password Modal Simulator -->
     <div id="forgot-password-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="glass-panel p-6 rounded-2xl max-w-sm w-full shadow-2xl relative">
+        <div class="glass-card p-6 rounded-2xl max-w-sm w-full shadow-2xl relative">
             <button onclick="closeForgotPasswordModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark"></i></button>
             <h3 class="text-base font-black text-slate-800 mb-1"><i class="fa-solid fa-key text-blue-600 mr-2"></i>Reset Password</h3>
             <p class="text-xs text-slate-500 mb-4">Enter registered Mobile or Email to receive recovery OTP</p>
@@ -1023,57 +773,67 @@
             </div>
 
             <div id="fp-step-2" class="hidden space-y-3 mt-3">
-                <p class="text-[11px] text-emerald-700 font-bold bg-emerald-50 p-2 rounded">OTP Sent! (Demo Simulator: OTP is 123456)</p>
+                <p class="text-[11px] text-emerald-700 font-bold bg-emerald-50 p-2 rounded">OTP Sent to your contact! (Default OTP: 123456)</p>
                 <input type="text" id="fp-otp" placeholder="Enter 6 Digit OTP" class="w-full px-3 py-2 text-xs border rounded-lg outline-none">
-                <button onclick="verifyRecoveryOTP()" class="w-full bg-emerald-600 text-white font-bold py-2 text-xs rounded-lg shadow">Verify OTP & Send Password</button>
+                <button onclick="verifyRecoveryOTP()" class="w-full bg-emerald-600 text-white font-bold py-2 text-xs rounded-lg shadow">Verify OTP & Reveal Password</button>
             </div>
         </div>
     </div>
 
     <!-- ================================================================= -->
-    <!-- JAVASCRIPT MASTER SYSTEM SCRIPT                                   -->
+    <!-- JAVASCRIPT MASTER SYSTEM LOGIC                                    -->
     <!-- ================================================================= -->
     <script>
-        // --- 1. LOCAL DATA STORE (Initial Mock Data & Persistent State) ---
+        // --- 1. SUPABASE DATABASE CONFIGURATION (KEYS INSERTED HERE) ---
+        const SUPABASE_URL = "https://ofqiqjxwvvbtjzcbbkd.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_JPAuzUxrN1MIF-3PJKaQGw_yanb7tsj";
+        
+        let supabase = null;
+        try {
+            if (window.supabase && SUPABASE_URL && SUPABASE_ANON_KEY) {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        } catch(err) {
+            console.warn("Supabase init fallback:", err);
+        }
+
+        // Live Real-Time Multi-Tab Channel
+        const liveChannel = new BroadcastChannel('coem_live_sync');
+
+        // Initial Data Mock
         const DEFAULT_STUDENTS = [
-            { prn: '20260101', name: 'Jayesh Patil', pass: '123456', mobile: '9876543210', email: 'jayesh@example.com', category: 'Engineering', degree: 'B.Voc', branch: 'Data Science', year: 'First Year', batch: 'S1', roll: '01', photo: 'https://via.placeholder.com/150', status: 'approved' },
-            { prn: '20260102', name: 'Rahul Sharma', pass: '123456', mobile: '9876543211', email: 'rahul@example.com', category: 'Engineering', degree: 'B.Tech', branch: 'Computer Science', year: 'First Year', batch: 'S2', roll: '02', photo: 'https://via.placeholder.com/150', status: 'approved' }
+            { prn: '20260101', name: 'Jayesh Patil', pass: '123456', mobile: '9876543210', email: 'jayesh@example.com', category: 'Engineering', degree: 'B.Voc', branch: 'Data Science', year: 'Second Year', batch: 'S1', roll: '01', photo: 'https://via.placeholder.com/150', status: 'approved' }
         ];
 
         const DEFAULT_TEACHERS = [
-            { empid: 'EMP001', name: 'Prof. S. R. Marathe', pass: 'teach123', mobile: '9123456780', dept: 'Data Science', subject: 'Python Programming', status: 'approved' },
-            { empid: 'EMP002', name: 'Prof. A. N. Chaudhari', pass: 'teach123', mobile: '9123456781', dept: 'Electrical', subject: 'Circuit Analysis', status: 'approved' }
+            { empid: 'EMP001', name: 'Mrs. Pooja Marathe', pass: 'teach123', mobile: '9123456780', dept: 'Data Science', subject: 'Probability & Statistics (PS)', status: 'approved' },
+            { empid: 'EMP002', name: 'Mr. Rohan Pardeshi', pass: 'teach123', mobile: '9123456781', dept: 'Data Science', subject: 'MDM', status: 'approved' },
+            { empid: 'EMP003', name: 'Dr. Nilesh Ingale', pass: 'teach123', mobile: '9123456782', dept: 'Data Science', subject: 'Data Structure & Algorithm', status: 'approved' }
         ];
 
-        const DEFAULT_HODS = [
-            { hodid: 'HOD_DS', name: 'Dr. K. S. Patil', pass: 'hod123', mobile: '9000011111', dept: 'Data Science', status: 'approved' }
-        ];
-
-        const DEFAULT_TIMETABLE = [
-            { dept: 'Data Science', batch: 'S1', day: 'Monday', time: '09:00 - 10:00 AM', subject: 'Python Programming', teacherEmp: 'EMP001', room: 'Lab 101' },
-            { dept: 'Data Science', batch: 'S1', day: 'Tuesday', time: '10:00 - 11:00 AM', subject: 'Data Structures', teacherEmp: 'EMP001', room: 'Lab 102' },
-            { dept: 'Data Science', batch: 'S2', day: 'Monday', time: '11:00 - 12:00 PM', subject: 'Python Programming', teacherEmp: 'EMP001', room: 'Lab 101' }
-        ];
-
-        // Init localStorage if empty
         if (!localStorage.getItem('coem_students')) localStorage.setItem('coem_students', JSON.stringify(DEFAULT_STUDENTS));
         if (!localStorage.getItem('coem_teachers')) localStorage.setItem('coem_teachers', JSON.stringify(DEFAULT_TEACHERS));
-        if (!localStorage.getItem('coem_hods')) localStorage.setItem('coem_hods', JSON.stringify(DEFAULT_HODS));
-        if (!localStorage.getItem('coem_timetable')) localStorage.setItem('coem_timetable', JSON.stringify(DEFAULT_TIMETABLE));
         if (!localStorage.getItem('coem_attendance')) localStorage.setItem('coem_attendance', JSON.stringify([]));
 
-        // State Variables
         let currentUser = JSON.parse(sessionStorage.getItem('coem_active_user')) || null;
         let activeQRSession = null;
-        let qrCodeInstance = null;
         let html5QrScanner = null;
         let uploadedPhotoBase64 = 'https://via.placeholder.com/150';
 
-        // --- 2. PORTAL SWITCHER & NAVIGATION ---
+        // Listen to Real-Time Updates across tabs/screens
+        liveChannel.onmessage = (event) => {
+            if (event.data.type === 'NEW_STUDENT_REGISTERED' || event.data.type === 'USER_STATUS_UPDATED') {
+                if (currentUser && currentUser.role === 'admin') renderAdminDashboard();
+            }
+            if (event.data.type === 'NEW_ATTENDANCE_MARKED') {
+                if (currentUser && currentUser.role === 'teacher') updateTeacherLiveAttendanceList();
+            }
+        };
+
+        // --- 2. NAVIGATION & NOTIFICATIONS ---
         function switchPortal(portalId) {
             document.querySelectorAll('.portal-view').forEach(el => el.classList.add('hidden'));
             document.getElementById('pending-approval-box').classList.add('hidden');
-            
             const target = document.getElementById(portalId + '-view');
             if (target) target.classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1103,19 +863,14 @@
             document.getElementById('notification-banner').classList.add('hidden');
         }
 
-        // Cascade Degree Options based on category
         function updateDegreeOptions() {
             const cat = document.getElementById('reg-category').value;
-            const degSelect = document.getElementById('reg-degree');
-            degSelect.innerHTML = '';
-            if (cat === 'Diploma') {
-                degSelect.innerHTML = '<option value="Diploma Engg">Diploma in Engineering</option>';
-            } else {
-                degSelect.innerHTML = '<option value="B.Tech">B.Tech</option><option value="M.Tech">M.Tech</option><option value="B.Voc">B.Voc</option>';
-            }
+            const deg = document.getElementById('reg-degree');
+            deg.innerHTML = cat === 'Diploma' 
+                ? '<option value="Diploma Engg">Diploma in Engineering</option>' 
+                : '<option value="B.Voc">B.Voc</option><option value="B.Tech">B.Tech</option><option value="M.Tech">M.Tech</option>';
         }
 
-        // Photo Upload Preview
         function previewUploadPhoto(e) {
             const file = e.target.files[0];
             if (file) {
@@ -1129,15 +884,14 @@
             }
         }
 
-        // --- 3. STUDENT REGISTRATION & LOGIN ---
-        function handleStudentRegistration(e) {
+        // --- 3. STUDENT REGISTRATION & LOGIN FLOW ---
+        async function handleStudentRegistration(e) {
             e.preventDefault();
             const prn = document.getElementById('reg-prn').value.trim();
             const students = JSON.parse(localStorage.getItem('coem_students')) || [];
 
-            // Unique PRN Validation
             if (students.some(s => s.prn === prn)) {
-                showNotification('This PRN Number is already registered! Please Login.', 'error');
+                showNotification('This PRN is already registered! Please Login.', 'error');
                 return;
             }
 
@@ -1154,16 +908,40 @@
                 batch: document.getElementById('reg-batch').value,
                 roll: document.getElementById('reg-roll').value.trim(),
                 photo: uploadedPhotoBase64,
-                status: 'pending' // Enforces Pending Screen
+                status: 'pending'
             };
+
+            // Supabase Database Insertion
+            if (supabase) {
+                try {
+                    await supabase.from('profiles').insert([{
+                        identifier: newStudent.prn,
+                        full_name: newStudent.name,
+                        role: 'student',
+                        mobile: newStudent.mobile,
+                        email: newStudent.email,
+                        department: newStudent.branch,
+                        degree: newStudent.degree,
+                        year: newStudent.year,
+                        batch: newStudent.batch,
+                        roll_no: newStudent.roll,
+                        photo_url: newStudent.photo,
+                        status: 'pending'
+                    }]);
+                } catch(err) {
+                    console.warn("Supabase insert note:", err);
+                }
+            }
 
             students.push(newStudent);
             localStorage.setItem('coem_students', JSON.stringify(students));
 
-            // Hide registration & Show Pending Screen
+            // Instant Real-Time Push to Admin without refresh
+            liveChannel.postMessage({ type: 'NEW_STUDENT_REGISTERED', data: newStudent });
+
             document.getElementById('student-register-view').classList.add('hidden');
             document.getElementById('pending-approval-box').classList.remove('hidden');
-            showNotification('Application submitted successfully! Waiting for Admin approval.', 'success');
+            showNotification('Application submitted! Pending admin approval.', 'success');
         }
 
         function handleStudentLogin(e) {
@@ -1190,7 +968,6 @@
                 return;
             }
 
-            // Set Active Session
             initUserSession(user, 'student');
             renderStudentDashboard(user);
         }
@@ -1199,38 +976,16 @@
             document.getElementById('stud-dash-photo').src = user.photo || 'https://via.placeholder.com/150';
             document.getElementById('stud-dash-name').innerText = user.name;
             document.getElementById('stud-dash-batch-badge').innerText = user.batch;
-            document.getElementById('stud-dash-batch-title').innerText = user.batch;
+            document.getElementById('stud-dash-batch-title').innerText = `Batch ${user.batch}`;
             document.getElementById('stud-dash-prn').innerText = user.prn;
             document.getElementById('stud-dash-branch').innerText = `${user.degree} (${user.branch})`;
             document.getElementById('stud-dash-mobile').innerText = user.mobile;
             document.getElementById('stud-dash-email').innerText = user.email;
 
-            // Render Only Specific Batch Timetable
-            const allTT = JSON.parse(localStorage.getItem('coem_timetable')) || [];
-            const myTT = allTT.filter(t => t.dept === user.branch && t.batch === user.batch);
-            const tbody = document.getElementById('stud-timetable-body');
-            tbody.innerHTML = '';
-
-            if (myTT.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No timetable entries found for Batch ${user.batch}</td></tr>`;
-            } else {
-                myTT.forEach(t => {
-                    tbody.innerHTML += `
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3 font-bold text-blue-900">${t.day}</td>
-                            <td class="p-3">${t.time}</td>
-                            <td class="p-3 font-bold">${t.subject}</td>
-                            <td class="p-3 text-slate-500">${t.teacherEmp}</td>
-                            <td class="p-3">${t.room || 'A101'}</td>
-                        </tr>
-                    `;
-                });
-            }
-
             switchPortal('student-dashboard');
         }
 
-        // --- 4. TEACHER WORKFLOW & LIVE QR CODE ---
+        // --- 4. TEACHER WORKFLOW & LIVE QR DASHBOARD ---
         function handleTeacherLogin(e) {
             e.preventDefault();
             const empid = document.getElementById('teacher-login-empid').value.trim();
@@ -1238,14 +993,8 @@
             const teachers = JSON.parse(localStorage.getItem('coem_teachers')) || [];
 
             const user = teachers.find(t => t.empid === empid && t.pass === pass);
-
             if (!user) {
                 showNotification('Invalid EMP ID or Password!', 'error');
-                return;
-            }
-
-            if (user.status !== 'approved') {
-                showNotification('Your account is pending for Admin approval.', 'error');
                 return;
             }
 
@@ -1253,39 +1002,10 @@
             renderTeacherDashboard(user);
         }
 
-        function handleTeacherRegistration(e) {
-            e.preventDefault();
-            const empid = document.getElementById('t-reg-empid').value.trim();
-            const teachers = JSON.parse(localStorage.getItem('coem_teachers')) || [];
-
-            if (teachers.some(t => t.empid === empid)) {
-                showNotification('EMP ID already registered!', 'error');
-                return;
-            }
-
-            const newTeacher = {
-                empid: empid,
-                name: document.getElementById('t-reg-name').value.trim(),
-                dept: document.getElementById('t-reg-dept').value,
-                subject: document.getElementById('t-reg-subject').value.trim(),
-                mobile: document.getElementById('t-reg-mobile').value.trim(),
-                pass: document.getElementById('t-reg-pass').value.trim(),
-                status: 'pending'
-            };
-
-            teachers.push(newTeacher);
-            localStorage.setItem('coem_teachers', JSON.stringify(teachers));
-            showNotification('Teacher registration submitted! Awaiting Admin approval.', 'success');
-            switchPortal('teacher-login');
-        }
-
         function renderTeacherDashboard(user) {
             document.getElementById('teacher-dash-name').innerText = user.name;
             document.getElementById('teacher-dash-empid').innerText = user.empid;
-            document.getElementById('teacher-dash-dept').innerText = user.dept;
-            document.getElementById('teacher-dash-subject').innerText = user.subject;
-
-            // Live Date / Time
+            
             const now = new Date();
             document.getElementById('current-live-date').innerText = now.toDateString();
             document.getElementById('current-live-time').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -1297,21 +1017,19 @@
         function startNewLectureSession() {
             if (!currentUser || currentUser.role !== 'teacher') return;
 
-            // Create Unique QR Session Token with Department & Batch validation
             activeQRSession = {
                 sessionId: 'SES_' + Date.now(),
                 teacherEmp: currentUser.empid,
-                subject: currentUser.subject,
-                dept: currentUser.dept,
-                year: 'First Year',
-                batch: 'S1', // Active lecture target batch
+                subject: currentUser.subject || 'Probability & Statistics (PS)',
+                dept: 'Data Science',
+                year: 'Second Year',
+                batch: 'S1',
                 timestamp: Date.now()
             };
 
-            // Generate QR Code with High Precision
-            const qrContainer = document.getElementById('teacher-qr-box');
-            qrContainer.innerHTML = '';
-            qrCodeInstance = new QRCode(qrContainer, {
+            const qrBox = document.getElementById('teacher-qr-box');
+            qrBox.innerHTML = '';
+            new QRCode(qrBox, {
                 text: JSON.stringify(activeQRSession),
                 width: 170,
                 height: 170,
@@ -1321,29 +1039,30 @@
             });
 
             updateTeacherLiveAttendanceList();
-            showNotification('New Lecture QR Session Activated for Batch S1!', 'success');
+            showNotification('Live QR Session Generated for Batch S1!', 'success');
         }
 
         function updateTeacherLiveAttendanceList() {
             if (!activeQRSession) return;
             const attRecords = JSON.parse(localStorage.getItem('coem_attendance')) || [];
-            const currentSessionRecords = attRecords.filter(r => r.sessionId === activeQRSession.sessionId);
+            const sessionRecords = attRecords.filter(r => r.sessionId === activeQRSession.sessionId);
 
-            document.getElementById('teacher-live-count').innerText = currentSessionRecords.length;
+            document.getElementById('teacher-live-count').innerText = sessionRecords.length;
             const tbody = document.getElementById('teacher-attendance-live-body');
             tbody.innerHTML = '';
 
-            if (currentSessionRecords.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400 font-medium">Waiting for students to scan QR code...</td></tr>`;
+            if (sessionRecords.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 font-medium">Waiting for students to scan QR code...</td></tr>`;
                 return;
             }
 
-            currentSessionRecords.forEach(r => {
+            sessionRecords.forEach(r => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-emerald-50">
                         <td class="p-2.5 font-bold text-slate-900">${r.prn}</td>
                         <td class="p-2.5">${r.name}</td>
                         <td class="p-2.5 font-bold text-emerald-700">${r.batch}</td>
+                        <td class="p-2.5 font-medium text-slate-600">${r.mobile || '9876543210'}</td>
                         <td class="p-2.5">${r.time}</td>
                         <td class="p-2.5"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] rounded-full font-black">PRESENT</span></td>
                     </tr>
@@ -1351,7 +1070,7 @@
             });
         }
 
-        // --- 5. QR CODE SCANNING & REALTIME ATTENDANCE (NO REFRESH) ---
+        // --- 5. QR CODE SCANNING & REALTIME ATTENDANCE ---
         function toggleCameraScanner() {
             const modal = document.getElementById('scanner-modal');
             if (modal.classList.contains('hidden')) {
@@ -1361,8 +1080,8 @@
                     { facingMode: "environment" },
                     { fps: 10, qrbox: 250 },
                     onQRCodeScannedSuccess,
-                    onQRCodeScanError
-                ).catch(err => {
+                    () => {}
+                ).catch(() => {
                     showNotification('Camera access permission denied or unavailable', 'error');
                 });
             } else {
@@ -1374,37 +1093,31 @@
         function onQRCodeScannedSuccess(decodedText) {
             try {
                 const sessionData = JSON.parse(decodedText);
-                
-                // Close Scanner Modal
                 toggleCameraScanner();
 
-                // Strict Validations
                 if (!currentUser || currentUser.role !== 'student') {
                     showNotification('Only authenticated students can mark attendance!', 'error');
                     return;
                 }
 
-                // Department & Batch Validation
+                // Batch Validation
                 if (currentUser.branch !== sessionData.dept || currentUser.batch !== sessionData.batch) {
-                    showNotification(`Batch Mismatch! You are in Batch ${currentUser.batch}, but this QR is for ${sessionData.batch}.`, 'error');
+                    showNotification(`Batch Mismatch! You belong to ${currentUser.batch}, but this lecture is for ${sessionData.batch}.`, 'error');
                     return;
                 }
 
-                // Check If Already Marked
                 let attRecords = JSON.parse(localStorage.getItem('coem_attendance')) || [];
-                const alreadyMarked = attRecords.some(r => r.sessionId === sessionData.sessionId && r.prn === currentUser.prn);
-
-                if (alreadyMarked) {
-                    showNotification('Your attendance is already recorded for this lecture!', 'error');
+                if (attRecords.some(r => r.sessionId === sessionData.sessionId && r.prn === currentUser.prn)) {
+                    showNotification('Attendance already marked for this lecture session!', 'error');
                     return;
                 }
 
-                // Record Present Entry
                 const newRecord = {
                     sessionId: sessionData.sessionId,
                     prn: currentUser.prn,
                     name: currentUser.name,
                     batch: currentUser.batch,
+                    mobile: currentUser.mobile,
                     dept: currentUser.branch,
                     subject: sessionData.subject,
                     teacherEmp: sessionData.teacherEmp,
@@ -1416,139 +1129,51 @@
                 attRecords.push(newRecord);
                 localStorage.setItem('coem_attendance', JSON.stringify(attRecords));
 
+                // Broadcast live to teacher without page refresh
+                liveChannel.postMessage({ type: 'NEW_ATTENDANCE_MARKED', data: newRecord });
+
                 showNotification(`Present marked successfully for ${sessionData.subject}!`, 'success');
 
-                // If teacher is viewing, trigger live refresh
                 if (activeQRSession && activeQRSession.sessionId === sessionData.sessionId) {
                     updateTeacherLiveAttendanceList();
                 }
-
             } catch (e) {
                 showNotification('Invalid QR Code Scanned!', 'error');
             }
         }
 
-        function onQRCodeScanError(errorMessage) {
-            // Scanner searching frame - silent ignore
-        }
-
-        // --- 6. HOD & PRINCIPAL WORKFLOW ---
+        // --- 6. HOD, PRINCIPAL, PARENTS & ADMIN AUTHENTICATION ---
         function handleHODLogin(e) {
             e.preventDefault();
             const id = document.getElementById('hod-login-id').value.trim();
             const pass = document.getElementById('hod-login-pass').value.trim();
-            const hods = JSON.parse(localStorage.getItem('coem_hods')) || [];
-
-            const user = hods.find(h => h.hodid === id && h.pass === pass);
-            if (!user) {
+            if (id === 'HOD_DS' && pass === '12345') {
+                initUserSession({ name: 'Mr. Pravin Bhangale', hodid: 'HOD_DS' }, 'hod');
+                switchPortal('hod-dashboard');
+            } else {
                 showNotification('Invalid HOD Credentials!', 'error');
-                return;
             }
-            if (user.status !== 'approved') {
-                showNotification('HOD Account pending Admin approval.', 'error');
-                return;
-            }
-
-            initUserSession(user, 'hod');
-            document.getElementById('hod-dash-dept').innerText = user.dept;
-            document.getElementById('hod-dash-name').innerText = user.name;
-            document.getElementById('hod-dash-id').innerText = user.hodid;
-
-            // Render HOD Faculty list
-            const teachers = (JSON.parse(localStorage.getItem('coem_teachers')) || []).filter(t => t.dept === user.dept);
-            const tbody = document.getElementById('hod-faculty-table');
-            tbody.innerHTML = '';
-            teachers.forEach(t => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td class="p-3 font-bold">${t.empid}</td>
-                        <td class="p-3">${t.name}</td>
-                        <td class="p-3">${t.subject}</td>
-                        <td class="p-3"><span class="text-emerald-700 font-bold">Conducted</span></td>
-                        <td class="p-3 font-bold text-emerald-600">Yes (Active)</td>
-                    </tr>
-                `;
-            });
-
-            switchPortal('hod-dashboard');
-        }
-
-        function handleHODRegistration(e) {
-            e.preventDefault();
-            const hodid = document.getElementById('h-reg-id').value.trim();
-            const hods = JSON.parse(localStorage.getItem('coem_hods')) || [];
-
-            if (hods.some(h => h.hodid === hodid)) {
-                showNotification('HOD ID already exists!', 'error');
-                return;
-            }
-
-            hods.push({
-                hodid: hodid,
-                name: document.getElementById('h-reg-name').value.trim(),
-                dept: document.getElementById('h-reg-dept').value,
-                mobile: document.getElementById('h-reg-mobile').value.trim(),
-                pass: document.getElementById('h-reg-pass').value.trim(),
-                status: 'pending'
-            });
-
-            localStorage.setItem('coem_hods', JSON.stringify(hods));
-            showNotification('HOD Registration submitted for Admin verification!', 'success');
-            switchPortal('hod-login');
         }
 
         function handlePrincipalLogin(e) {
             e.preventDefault();
             const u = document.getElementById('principal-username').value.trim();
             const p = document.getElementById('principal-password').value.trim();
-
             if (u === 'Principal1' && p === '12345') {
                 initUserSession({ name: 'Hon. Principal', username: 'Principal1' }, 'principal');
-                renderPrincipalStats();
                 switchPortal('principal-dashboard');
             } else {
                 showNotification('Invalid Principal Credentials!', 'error');
             }
         }
 
-        function renderPrincipalStats() {
-            const body = document.getElementById('principal-report-body');
-            body.innerHTML = `
-                <tr>
-                    <td class="p-3 font-bold">Data Science</td>
-                    <td class="p-3">B.Voc (Engineering)</td>
-                    <td class="p-3 font-bold text-blue-700">6 Lectures</td>
-                    <td class="p-3 text-emerald-600 font-black">92.4%</td>
-                    <td class="p-3 text-rose-600 font-bold">7.6%</td>
-                    <td class="p-3"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-black">EXCELLENT</span></td>
-                </tr>
-                <tr>
-                    <td class="p-3 font-bold">Computer Science</td>
-                    <td class="p-3">B.Tech</td>
-                    <td class="p-3 font-bold text-blue-700">8 Lectures</td>
-                    <td class="p-3 text-emerald-600 font-black">86.0%</td>
-                    <td class="p-3 text-rose-600 font-bold">14.0%</td>
-                    <td class="p-3"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-black">GOOD</span></td>
-                </tr>
-                <tr>
-                    <td class="p-3 font-bold">Electrical Engineering</td>
-                    <td class="p-3">Diploma</td>
-                    <td class="p-3 font-bold text-blue-700">5 Lectures</td>
-                    <td class="p-3 text-amber-600 font-black">74.2%</td>
-                    <td class="p-3 text-rose-600 font-bold">25.8%</td>
-                    <td class="p-3"><span class="px-2 py-0.5 bg-amber-100 text-amber-800 rounded font-black">ATTENTION</span></td>
-                </tr>
-            `;
-        }
-
-        // --- 7. PARENT PORTAL ---
         function handleParentLogin(e) {
             e.preventDefault();
             const prn = document.getElementById('parent-ward-prn').value.trim();
             const pass = document.getElementById('parent-ward-pass').value.trim();
             const students = JSON.parse(localStorage.getItem('coem_students')) || [];
-
             const ward = students.find(s => s.prn === prn && s.pass === pass);
+
             if (!ward) {
                 showNotification('Invalid Ward PRN or Password!', 'error');
                 return;
@@ -1561,50 +1186,15 @@
             document.getElementById('parent-ward-dept').innerText = `${ward.degree} (${ward.branch})`;
             document.getElementById('parent-ward-batch').innerText = ward.batch;
 
-            filterParentAttendance('monthly', ward.prn);
             switchPortal('parent-dashboard');
         }
 
-        function filterParentAttendance(range, wardPrn = null) {
-            const prn = wardPrn || document.getElementById('parent-ward-prn-display').innerText;
-            const records = (JSON.parse(localStorage.getItem('coem_attendance')) || []).filter(r => r.prn === prn);
-            const tbody = document.getElementById('parent-attendance-body');
-            tbody.innerHTML = '';
-
-            if (records.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td class="p-3 font-bold">${new Date().toISOString().split('T')[0]}</td>
-                        <td class="p-3">Python Programming</td>
-                        <td class="p-3">Prof. S. R. Marathe</td>
-                        <td class="p-3"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full font-black">PRESENT</span></td>
-                        <td class="p-3 text-slate-500 font-normal">On Time (09:02 AM)</td>
-                    </tr>
-                `;
-                return;
-            }
-
-            records.forEach(r => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td class="p-3 font-bold">${r.date}</td>
-                        <td class="p-3">${r.subject}</td>
-                        <td class="p-3">${r.teacherEmp}</td>
-                        <td class="p-3"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full font-black">PRESENT</span></td>
-                        <td class="p-3 text-slate-500 font-normal">Recorded at ${r.time}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        // --- 8. ADMIN MASTER CONTROL PANEL ---
         function handleAdminLogin(e) {
             e.preventDefault();
             const u = document.getElementById('admin-username').value.trim();
             const p = document.getElementById('admin-password').value.trim();
-
             if (u === 'KCECOEM' && p === '54321') {
-                initUserSession({ name: 'Master Administrator', username: 'KCECOEM' }, 'admin');
+                initUserSession({ name: 'Master Admin', username: 'KCECOEM' }, 'admin');
                 renderAdminDashboard();
                 switchPortal('admin-dashboard');
             } else {
@@ -1626,32 +1216,31 @@
         function renderAdminDashboard() {
             const students = JSON.parse(localStorage.getItem('coem_students')) || [];
             const teachers = JSON.parse(localStorage.getItem('coem_teachers')) || [];
-            const hods = JSON.parse(localStorage.getItem('coem_hods')) || [];
 
             document.getElementById('admin-badge-students').innerText = students.length;
             document.getElementById('admin-badge-teachers').innerText = teachers.length;
-            document.getElementById('admin-badge-hod').innerText = hods.length;
 
-            // Render Students Table
+            // Render Students Table with Edit & Delete Functionality
             const sBody = document.getElementById('admin-students-table-body');
             sBody.innerHTML = '';
-            students.forEach((s, idx) => {
+            students.forEach(s => {
                 sBody.innerHTML += `
                     <tr class="hover:bg-slate-50">
-                        <td class="p-3"><img src="${s.photo}" class="w-8 h-8 rounded-full object-cover"></td>
+                        <td class="p-3"><img src="${s.photo}" class="w-8 h-8 rounded-full object-cover shadow-sm"></td>
                         <td class="p-3 font-bold text-blue-900">${s.prn}</td>
                         <td class="p-3">${s.name}</td>
                         <td class="p-3">${s.branch} - ${s.year} (<strong class="text-blue-700">${s.batch}</strong>)</td>
                         <td class="p-3">${s.mobile}<br><span class="text-[10px] text-slate-400">${s.email}</span></td>
-                        <td class="p-3 font-mono text-[11px] text-slate-500">${s.pass}</td>
+                        <td class="p-3 font-mono text-[11px] text-slate-600">${s.pass}</td>
                         <td class="p-3">
                             <span class="px-2 py-0.5 rounded-full text-[10px] font-black ${s.status === 'approved' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
                                 ${s.status.toUpperCase()}
                             </span>
                         </td>
                         <td class="p-3 text-center space-x-1">
-                            ${s.status === 'pending' ? `<button onclick="approveUser('student', '${s.prn}')" class="px-2 py-1 bg-emerald-600 text-white rounded text-[10px] font-bold hover:bg-emerald-700">Approve</button>` : ''}
-                            <button onclick="deleteUser('student', '${s.prn}')" class="px-2 py-1 bg-rose-100 text-rose-700 rounded text-[10px] font-bold hover:bg-rose-200">Delete</button>
+                            ${s.status === 'pending' ? `<button onclick="approveStudent('${s.prn}')" class="px-2 py-1 bg-emerald-600 text-white rounded text-[10px] font-bold hover:bg-emerald-700">Approve</button>` : ''}
+                            <button onclick="editStudentDetails('${s.prn}')" class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-[10px] font-bold hover:bg-blue-200">Edit</button>
+                            <button onclick="deleteStudent('${s.prn}')" class="px-2 py-1 bg-rose-100 text-rose-700 rounded text-[10px] font-bold hover:bg-rose-200">Delete</button>
                         </td>
                     </tr>
                 `;
@@ -1667,122 +1256,76 @@
                         <td class="p-3">${t.name}</td>
                         <td class="p-3">${t.dept} (${t.subject})</td>
                         <td class="p-3">${t.mobile}</td>
-                        <td class="p-3 font-mono text-[11px] text-slate-500">${t.pass}</td>
-                        <td class="p-3">
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-black ${t.status === 'approved' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                                ${t.status.toUpperCase()}
-                            </span>
-                        </td>
-                        <td class="p-3 text-center space-x-1">
-                            ${t.status === 'pending' ? `<button onclick="approveUser('teacher', '${t.empid}')" class="px-2 py-1 bg-emerald-600 text-white rounded text-[10px] font-bold">Approve</button>` : ''}
-                            <button onclick="deleteUser('teacher', '${t.empid}')" class="px-2 py-1 bg-rose-100 text-rose-700 rounded text-[10px] font-bold">Delete</button>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            // Render HOD Table
-            const hBody = document.getElementById('admin-hod-table-body');
-            hBody.innerHTML = '';
-            hods.forEach(h => {
-                hBody.innerHTML += `
-                    <tr class="hover:bg-slate-50">
-                        <td class="p-3 font-bold text-amber-900">${h.hodid}</td>
-                        <td class="p-3">${h.name}</td>
-                        <td class="p-3">${h.dept}</td>
-                        <td class="p-3">${h.mobile}</td>
-                        <td class="p-3 font-mono text-[11px] text-slate-500">${h.pass}</td>
-                        <td class="p-3">
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-black ${h.status === 'approved' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                                ${h.status.toUpperCase()}
-                            </span>
-                        </td>
-                        <td class="p-3 text-center space-x-1">
-                            ${h.status === 'pending' ? `<button onclick="approveUser('hod', '${h.hodid}')" class="px-2 py-1 bg-emerald-600 text-white rounded text-[10px] font-bold">Approve</button>` : ''}
-                            <button onclick="deleteUser('hod', '${h.hodid}')" class="px-2 py-1 bg-rose-100 text-rose-700 rounded text-[10px] font-bold">Delete</button>
-                        </td>
+                        <td class="p-3"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-full">APPROVED</span></td>
+                        <td class="p-3 text-center"><button onclick="deleteTeacher('${t.empid}')" class="px-2 py-1 bg-rose-100 text-rose-700 rounded text-[10px] font-bold">Delete</button></td>
                     </tr>
                 `;
             });
         }
 
-        function approveUser(role, id) {
-            if (role === 'student') {
-                let s = JSON.parse(localStorage.getItem('coem_students'));
-                s = s.map(item => item.prn === id ? { ...item, status: 'approved' } : item);
-                localStorage.setItem('coem_students', JSON.stringify(s));
-            } else if (role === 'teacher') {
-                let t = JSON.parse(localStorage.getItem('coem_teachers'));
-                t = t.map(item => item.empid === id ? { ...item, status: 'approved' } : item);
-                localStorage.setItem('coem_teachers', JSON.stringify(t));
-            } else if (role === 'hod') {
-                let h = JSON.parse(localStorage.getItem('coem_hods'));
-                h = h.map(item => item.hodid === id ? { ...item, status: 'approved' } : item);
-                localStorage.setItem('coem_hods', JSON.stringify(h));
-            }
+        function approveStudent(prn) {
+            let s = JSON.parse(localStorage.getItem('coem_students')) || [];
+            s = s.map(item => item.prn === prn ? { ...item, status: 'approved' } : item);
+            localStorage.setItem('coem_students', JSON.stringify(s));
+            
+            liveChannel.postMessage({ type: 'USER_STATUS_UPDATED', prn: prn });
             renderAdminDashboard();
-            showNotification(`Approved ${id} successfully!`, 'success');
+            showNotification(`Approved PRN: ${prn}`, 'success');
         }
 
         function approveAllPending() {
             let s = JSON.parse(localStorage.getItem('coem_students')) || [];
-            let t = JSON.parse(localStorage.getItem('coem_teachers')) || [];
-            let h = JSON.parse(localStorage.getItem('coem_hods')) || [];
-
             s = s.map(i => ({ ...i, status: 'approved' }));
-            t = t.map(i => ({ ...i, status: 'approved' }));
-            h = h.map(i => ({ ...i, status: 'approved' }));
-
             localStorage.setItem('coem_students', JSON.stringify(s));
-            localStorage.setItem('coem_teachers', JSON.stringify(t));
-            localStorage.setItem('coem_hods', JSON.stringify(h));
-
+            
+            liveChannel.postMessage({ type: 'USER_STATUS_UPDATED' });
             renderAdminDashboard();
             showNotification('All pending applications approved!', 'success');
         }
 
-        function deleteUser(role, id) {
-            if (!confirm(`Are you sure you want to delete ${id}?`)) return;
-            if (role === 'student') {
-                let s = JSON.parse(localStorage.getItem('coem_students')).filter(i => i.prn !== id);
+        function editStudentDetails(prn) {
+            let s = JSON.parse(localStorage.getItem('coem_students')) || [];
+            const student = s.find(i => i.prn === prn);
+            if (!student) return;
+
+            const newName = prompt("Edit Student Name:", student.name);
+            const newPass = prompt("Edit Password:", student.pass);
+            const newBatch = prompt("Edit Batch (S1/S2/S3/S4):", student.batch);
+
+            if (newName && newPass && newBatch) {
+                student.name = newName.trim();
+                student.pass = newPass.trim();
+                student.batch = newBatch.trim().toUpperCase();
                 localStorage.setItem('coem_students', JSON.stringify(s));
-            } else if (role === 'teacher') {
-                let t = JSON.parse(localStorage.getItem('coem_teachers')).filter(i => i.empid !== id);
-                localStorage.setItem('coem_teachers', JSON.stringify(t));
-            } else if (role === 'hod') {
-                let h = JSON.parse(localStorage.getItem('coem_hods')).filter(i => i.hodid !== id);
-                localStorage.setItem('coem_hods', JSON.stringify(h));
+                renderAdminDashboard();
+                showNotification(`Details updated for PRN: ${prn}`, 'success');
             }
+        }
+
+        function deleteStudent(prn) {
+            if (!confirm(`Are you sure you want to delete student PRN: ${prn}?`)) return;
+            let s = JSON.parse(localStorage.getItem('coem_students')) || [];
+            s = s.filter(i => i.prn !== prn);
+            localStorage.setItem('coem_students', JSON.stringify(s));
             renderAdminDashboard();
-            showNotification(`Record deleted!`, 'success');
+            showNotification(`Student record removed!`, 'success');
         }
 
-        function handleAddTimetableEntry(e) {
-            e.preventDefault();
-            const newEntry = {
-                dept: document.getElementById('tt-dept').value,
-                batch: document.getElementById('tt-batch').value,
-                day: document.getElementById('tt-day').value,
-                time: document.getElementById('tt-time').value.trim(),
-                subject: document.getElementById('tt-subject').value.trim(),
-                teacherEmp: 'EMP001',
-                room: 'Lab 101'
-            };
-
-            const tt = JSON.parse(localStorage.getItem('coem_timetable')) || [];
-            tt.push(newEntry);
-            localStorage.setItem('coem_timetable', JSON.stringify(tt));
-            showNotification('Timetable entry saved!', 'success');
+        function deleteTeacher(empid) {
+            if (!confirm(`Delete teacher EMP ID: ${empid}?`)) return;
+            let t = JSON.parse(localStorage.getItem('coem_teachers')) || [];
+            t = t.filter(i => i.empid !== empid);
+            localStorage.setItem('coem_teachers', JSON.stringify(t));
+            renderAdminDashboard();
+            showNotification(`Faculty removed!`, 'success');
         }
 
-        // --- 9. SESSION MANAGEMENT & FORGOT PASSWORD ---
+        // --- 7. SESSION MANAGEMENT & FORGOT PASSWORD SIMULATOR ---
         function initUserSession(user, role) {
             currentUser = { ...user, role: role };
             sessionStorage.setItem('coem_active_user', JSON.stringify(currentUser));
-
             const badge = document.getElementById('session-badge');
-            const tag = document.getElementById('session-user-tag');
-            tag.innerText = `${user.name || user.username} (${role.toUpperCase()})`;
+            document.getElementById('session-user-tag').innerText = `${user.name || user.username} (${role.toUpperCase()})`;
             badge.classList.remove('hidden');
             badge.classList.add('flex');
         }
@@ -1796,8 +1339,7 @@
             showNotification('Logged out successfully', 'success');
         }
 
-        // Forgot Password Simulator
-        function openForgotPasswordModal(role) {
+        function openForgotPasswordModal() {
             document.getElementById('forgot-password-modal').classList.remove('hidden');
             document.getElementById('fp-step-1').classList.remove('hidden');
             document.getElementById('fp-step-2').classList.add('hidden');
@@ -1811,7 +1353,7 @@
             const ident = document.getElementById('fp-identifier').value.trim();
             const cont = document.getElementById('fp-contact').value.trim();
             if (!ident || !cont) {
-                showNotification('Please enter all fields!', 'error');
+                showNotification('Please enter all required fields!', 'error');
                 return;
             }
             document.getElementById('fp-step-1').classList.add('hidden');
@@ -1820,22 +1362,27 @@
 
         function verifyRecoveryOTP() {
             const otp = document.getElementById('fp-otp').value.trim();
+            const ident = document.getElementById('fp-identifier').value.trim();
+            const students = JSON.parse(localStorage.getItem('coem_students')) || [];
+            const user = students.find(s => s.prn === ident);
+
             if (otp === '123456') {
-                showNotification('Correct OTP! Your password has been sent to your mobile/email.', 'success');
+                const recoveredPass = user ? user.pass : '123456';
+                alert(`OTP Verified Successfully!\nYour Password is: ${recoveredPass}\n(Sent to your registered contact number/email)`);
                 closeForgotPasswordModal();
             } else {
-                showNotification('Incorrect OTP entered! Please try again.', 'error');
+                showNotification('Incorrect OTP entered! Please check and try again.', 'error');
             }
         }
 
-        // On Page Load: Restore session if active
+        // On Page Load: Restore session if present
         window.addEventListener('DOMContentLoaded', () => {
             if (currentUser) {
                 initUserSession(currentUser, currentUser.role);
                 if (currentUser.role === 'student') renderStudentDashboard(currentUser);
                 else if (currentUser.role === 'teacher') renderTeacherDashboard(currentUser);
                 else if (currentUser.role === 'hod') switchPortal('hod-dashboard');
-                else if (currentUser.role === 'principal') { renderPrincipalStats(); switchPortal('principal-dashboard'); }
+                else if (currentUser.role === 'principal') switchPortal('principal-dashboard');
                 else if (currentUser.role === 'admin') { renderAdminDashboard(); switchPortal('admin-dashboard'); }
             }
         });
